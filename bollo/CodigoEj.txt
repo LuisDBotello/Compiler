@@ -1,0 +1,24 @@
+$$
+int x = 90;
+int y = 70;
+int a = 5;
+String MSG1 = "Luis";
+String MSG2 = "Daniel";
+
+for(int i=0;i<10;i++){
+   int f = 10;
+   print(((f+i)*a));
+}
+y = 2*(x+4)+a+a;
+print(y);
+if ((2*(x+4)+a) < (200+(a*a)-1)){
+   x=3;
+   print(MSG1);
+} else {
+   x=6;
+   print(MSG2);
+}
+   x=10;
+   print(x);
+   
+$$

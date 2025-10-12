@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="10" alignment="TOP_LEFT" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.compiler.UI.controlador.LoginController"
+      stylesheets="@/css/login.css">
+    <padding>
+        <Insets top="50" right="50" bottom="50" left="50"/>
+    </padding>
+
+    <Label text="Bienvenido al proyecto de Daniel" fx:id="lblWelcome" id="titulo"/>
+        <VBox.margin>
+            <Insets top="40"/>
+        </VBox.margin>
+
+    <Label text="Usuario" styleClass="LabelFields"/>
+    <TextField fx:id="txtUsuario" maxWidth="300" styleClass="campo-texto"/>
+
+    <Label text="Contraseña" styleClass="LabelFields"/>
+    <PasswordField fx:id="txtPassword" maxWidth="300" styleClass="campo-texto"/>
+
+    <Button text="Iniciar sesión" fx:id="btnLogin" styleClass="boton" onAction="#iniciarSesion"/>
+</VBox>

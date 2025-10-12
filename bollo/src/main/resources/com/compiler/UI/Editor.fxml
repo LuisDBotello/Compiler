@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.Region?>
+
+<SplitPane xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.compiler.UI.controlador.EditorController" orientation="HORIZONTAL"
+            dividerPositions="0.25"
+            stylesheets="@/css/editor.css">
+
+    <VBox spacing="10" prefWidth="250" maxWidth="Infinity" id="VBoxFiles" fx:id="panelIzquierdo">
+        <Label text="Explorador de Archivos" style="-fx-font-weight: bold;"/>
+        <TreeView fx:id="treeArchivos" prefHeight="600"/>
+        <Button text="Refrescar" onAction="#refrescarExplorador"/>
+    </VBox>
+
+    <VBox spacing="8" style="-fx-padding: 10;" id="VBoxEditor" fx:id="panelDerecho">    
+
+        <HBox spacing="10" style="-fx-alignment: center-left;">
+            <Label text="Editor de Código" />
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Ejecutar" onAction="#ejecutarPrograma" styleClass="ejecutar-button"/>
+        </HBox>
+        
+        <HBox spacing="8">        
+            <Button text="A+" onAction="#aumentarTexto"/>
+            <Button text="A-" onAction="#disminuirTexto"/>
+            <Button text="Guardar" onAction="#guardarCodigo"/>
+            <Button text="Scanner" onAction="#escanearCodigo"/>
+            <Button text="Parser" onAction="#parsearCodigo"/>
+            <Button text="Semántico" onAction="#analizarSemantico"/>
+            <Button text="Gen. Ensamblador" onAction="#generarEnsamblador"/>
+            <Button text="Gen. Objeto" onAction="#generarObjeto"/>
+        </HBox>
+
+        <!-- SplitPane vertical para dividir editor y resultados -->
+        <SplitPane orientation="VERTICAL" VBox.vgrow="ALWAYS" dividerPositions="0.6" fx:id="splitVertical">
+            
+            <!-- Panel superior: Editor principal -->
+            <VBox fx:id="contenedorEditor">
+                <!-- El codeArea principal se agregará aquí desde Java -->
+            </VBox>
+            
+            <!-- Panel inferior: Pestañas de resultados -->
+            <TabPane fx:id="tabResultados" styleClass="resultado-tabs">
+                <Tab text="Léxico" closable="false">
+                    <ScrollPane fx:id="scrollLexico" fitToWidth="true" fitToHeight="true" 
+                               styleClass="resultado-scroll">
+                    </ScrollPane>
+                </Tab>
+                <Tab text="Sintáctico" closable="false">
+                    <ScrollPane fx:id="scrollSintactico" fitToWidth="true" fitToHeight="true" 
+                               styleClass="resultado-scroll">
+                    </ScrollPane>
+                </Tab>
+                <Tab text="Semántico" closable="false">
+                    <ScrollPane fx:id="scrollSemantico" fitToWidth="true" fitToHeight="true" 
+                               styleClass="resultado-scroll">
+                    </ScrollPane>
+                </Tab>
+                <Tab text="Código Generado" closable="false">
+                    <ScrollPane fx:id="scrollCodigoGenerado" fitToWidth="true" fitToHeight="true" 
+                               styleClass="resultado-scroll">
+                    </ScrollPane>
+                </Tab>
+            </TabPane>
+            
+        </SplitPane>
+    </VBox>
+
+</SplitPane>

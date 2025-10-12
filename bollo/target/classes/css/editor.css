@@ -1,0 +1,374 @@
+/* Contenedor Principal */
+SplitPane {
+    -fx-min-width: 1440px;
+    -fx-min-height: 800px;
+    -fx-background-color: #0d1117;
+    -fx-padding: 10px;
+}
+
+/* Divisor del SplitPane */
+SplitPane .divider {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+SplitPane .split-pane-divider {
+    -fx-background-color: transparent;
+}
+
+SplitPane:horizontal .split-pane-divider {
+    -fx-pref-width: 1px;
+    -fx-background-color: transparent;
+}
+
+/* Divisor vertical invisible pero funcional */
+#splitVertical .split-pane-divider {
+    -fx-pref-height: 2px;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+#splitVertical .split-pane-divider:hover {
+    -fx-background-color: #484f5855;
+    -fx-cursor: v-resize;
+}
+
+/* Otros divisores verticales (si los hay) */
+SplitPane:vertical .split-pane-divider {
+    -fx-pref-height: 4px;
+    -fx-background-color: transparent;
+}
+
+SplitPane:vertical .split-pane-divider:hover {
+    -fx-background-color: #484f58;
+}
+
+/* Panel Izquierdo - Explorador de Archivos */
+#VBoxFiles {
+    -fx-background-color: #161b22;
+    -fx-border-color: #30363d;
+    -fx-border-width: 0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-pref-width: 280px;
+    -fx-padding: 20px;
+}
+
+/* Panel Derecho - Editor */
+#VBoxEditor {
+    -fx-background-color: #0d1117;
+    -fx-border-width: 0;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 20px;
+    -fx-translate-y: 0;
+}
+
+/* Área de Código */
+.code-area {
+    -fx-background-color: #161b22;
+    -fx-border-color: #30363d;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -rtfx-text-fill: #c9d1d9;
+    -fx-font-family: 'Consolas', 'Courier New', monospace;
+    -fx-font-size: 14px;
+    -fx-padding: 15px;
+    -fx-pref-height: 600px;
+    -fx-max-height: Infinity;
+}
+
+.code-area .text {
+    -fx-fill: #c9d1d9;
+}
+
+.code-area .paragraph-box:has-caret {
+    -fx-background-color: #1c2128;
+}
+
+/* Números de Línea */
+.lineno {
+    -fx-background-color: #0d1117;
+    -fx-text-fill: #6e7681;
+    -fx-font-size: 14px;
+    -fx-padding: 0 15 0 10;
+    -fx-font-family: 'Consolas', 'Courier New', monospace;
+    -fx-alignment: center-right;
+}
+
+.code-area .paragraph-box {
+    -fx-background-color: transparent;
+}
+
+.code-area .paragraph-text {
+    -fx-background-color: transparent;
+}
+
+/* Selección de texto en el CodeArea */
+.code-area .selection {
+    -rtfx-background-color: #06360095;
+}
+
+.code-area .styled-text-area .selection {
+    -fx-fill: #06360095;
+}
+
+.code-area > .styled-text-area {
+    -fx-highlight-fill: #06360095;
+    -fx-highlight-text-fill: #ffffff;
+}
+
+/* Labels */
+VBox Label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #e6edf3;
+    -fx-padding: 0 0 12 0;
+}
+
+/* TreeView - Explorador de Archivos */
+.tree-view {
+    -fx-background-color: #161b22;
+    -fx-border-color: #30363d;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.tree-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c9d1d9;
+    -fx-padding: 5 5 5 5;
+    -fx-font-size: 13px;
+}
+
+.tree-cell:selected {
+    -fx-background-color: #015801ab;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 6;
+}
+
+.tree-cell:hover {
+    -fx-background-color: #21262d;
+    -fx-background-radius: 6;
+}
+
+.tree-cell:selected:hover {
+    -fx-background-color: #008500ab;
+}
+
+.tree-cell > .tree-disclosure-node {
+    -fx-background-color: transparent;
+}
+
+.tree-cell > .tree-disclosure-node > .arrow {
+    -fx-background-color: #7d8590;
+    -fx-shape: "M 0 0 L 4 4 L 0 8 Z";
+    -fx-padding: 4;
+}
+
+.tree-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-rotate: 90;
+}
+
+/* Botones */
+.button {
+    -fx-background-color: #21262d;
+    -fx-text-fill: #c9d1d9;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 6;
+    -fx-border-color: #30363d;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #30363d;
+    -fx-border-color: #484f58;
+}
+
+.button:pressed {
+    -fx-background-color: #161b22;
+}
+
+/* Botón Compilar - Acento Verde */
+.button:first-child {
+    -fx-background-color: #238636;
+    -fx-border-color: #2ea043;
+    -fx-text-fill: #ffffff;
+}
+
+.button:first-child:hover {
+    -fx-background-color: #2ea043;
+    -fx-border-color: #3fb950;
+}
+
+.button:first-child:pressed {
+    -fx-background-color: #1a7f37;
+}
+
+/* ScrollBar */
+.scroll-bar {
+    -fx-background-color: #0d1117;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #30363d;
+    -fx-background-radius: 8;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #484f58;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #161b22;
+    -fx-background-radius: 8;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* HBox contenedor de botones */
+HBox {
+    -fx-spacing: 10;
+    -fx-padding: 0 0 15 0;
+}
+
+/* VBox spacing */
+VBox {
+    -fx-spacing: 10;
+}
+
+/* CodeArea de resultados (solo lectura) */
+.code-area-resultado {
+    -fx-background-color: #0d1117;
+    -fx-border-width: 0;
+    -rtfx-text-fill: #8b949e;
+    -fx-font-family: 'Consolas', 'Courier New', monospace;
+    -fx-font-size: 16px;
+    -fx-padding: 8px;
+    -fx-opacity: 0.9;
+    -fx-pref-height: 100px;
+    -fx-max-height: Infinity;
+}
+
+/* TabPane para resultados */
+.tab-pane {
+    -fx-tab-min-width: 100px;
+    -fx-tab-max-width: 200px;
+    -fx-tab-min-height: 30px;
+    -fx-tab-max-height: 30px;
+    -fx-border-color: #30363d;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.tab-pane .tab-header-area {
+    -fx-background-color: #161b22;
+    -fx-border-radius: 8 8 0 0;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #161b22;
+    -fx-border-radius: 8 8 0 0;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #21262d;
+    -fx-border-color: #30363d;
+    -fx-padding: 0 12 0 12;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab-pane .tab-label {
+    -fx-text-fill: #c9d1d9;
+    -fx-font-size: 14px;
+    -fx-alignment: center;
+    -fx-translate-y: 5px;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #015801ab
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #ffffff;
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: #30363d;
+}
+
+.tab-pane .tab-content-area {
+    -fx-background-color: #0d1117;
+    -fx-border-width: 0;
+    -fx-border-radius: 0 0 8 8;
+    -fx-background-radius: 0 0 8 8;
+    -fx-padding: 10;
+}
+
+.resultado-tabs .tab-content-area {
+    -fx-background-color: #0d1117;
+    -fx-padding: 0;
+}
+
+.resultado-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #7d8590;
+    -fx-padding: 3 0 2 0;
+}
+
+.resultado-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.resultado-scroll .viewport {
+    -fx-background-color: #0d1117;
+}
+
+.resultado-scroll .content {
+    -fx-padding: 5;
+}
+
+/* Scrollpane (si se usa) */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #161b22;
+}
+
+/* Text Input (si se usa) */
+.text-input {
+    -fx-background-color: #0d1117;
+    -fx-text-fill: #c9d1d9;
+    -fx-prompt-text-fill: #7d8590;
+    -fx-border-color: #30363d;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}
+
+.text-input:focused {
+    -fx-border-color: #015801ab;
+    -fx-background-color: #0d1117;
+}

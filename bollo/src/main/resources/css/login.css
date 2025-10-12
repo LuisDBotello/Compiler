@@ -1,0 +1,35 @@
+.root {
+    -fx-background-color: #f4f6f8;
+}
+
+#titulo {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+.LabelFields {
+    -fx-font-size: 18px;
+    -fx-text-fill: #34495e;
+    -fx-font-weight: bold;
+    -fx-text-alignment: left;
+}
+.campo-texto {
+    -fx-padding: 10;
+    -fx-border-color: #007a0a;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.boton {
+    -fx-background-color: #007a0a;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 10;
+    -fx-translate-y: 15px;
+}
+.boton:hover {
+    -fx-background-color: #005f07;
+    -fx-cursor: hand;
+}
