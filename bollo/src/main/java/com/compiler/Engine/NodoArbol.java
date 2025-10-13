@@ -61,22 +61,4 @@ public class NodoArbol {
         
         return sb.toString();
     }
-    
-    public String toHTML() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<ul style='list-style-type: none; padding-left: 20px;'>");
-        sb.append("<li><strong>").append(nombre).append("</strong>");
-        if (!valor.isEmpty()) {
-            sb.append(" <span style='color: #666;'>[").append(valor).append("]</span>");
-        }
-        if (!hijos.isEmpty()) {
-            sb.append("<ul style='list-style-type: none; padding-left: 20px;'>");
-            for (NodoArbol hijo : hijos) {
-                sb.append(hijo.toHTML());
-            }
-            sb.append("</ul>");
-        }
-        sb.append("</li></ul>");
-        return sb.toString();
-    }
 }
