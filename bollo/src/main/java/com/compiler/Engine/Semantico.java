@@ -9,19 +9,12 @@ public class Semantico {
     public static String regexNum = "^\\s*(int|float)\\s+[a-zA-Z_$][a-zA-Z0-9_$]*\\s*(=\\s*(-?\\d+(\\.\\d+)?)?)?\\s*$";
     public static String regexSt = "^\\s*String\\s+[a-zA-Z_$][a-zA-Z0-9_$]*\\s*(=\\s*\".*\"\\s*)?\\s*$";
 
-    Escaner Esc = null;
-    private Parser Par;
     public boolean ErrorSemantico = false;
-    public boolean VariableDuplicada = false;
-    ArrayList<String> Instrucciones = new ArrayList<>(); 
     TablaDeSimbolos tds;
+    private final NodoArbol ArbolSintactico;
     
-
-
-    
-    public Semantico(Parser par, Escaner esc){
-        this.Par = par;
-        this.Esc = esc;
+    public Semantico(NodoArbol arbolsintactico){
+        this.ArbolSintactico = arbolsintactico;
     }
 
     void Analizar(JTextArea JTACodigoFuente, boolean Apto){
