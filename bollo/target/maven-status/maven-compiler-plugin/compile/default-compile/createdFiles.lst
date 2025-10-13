@@ -1,4 +1,3 @@
-com\compiler\Engine\GUI.class
 com\compiler\Engine\ObjectCode.class
 com\compiler\Engine\Escaner.class
 com\compiler\UI\UserInterface.class

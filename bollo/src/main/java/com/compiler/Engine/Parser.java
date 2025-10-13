@@ -51,8 +51,10 @@ public class Parser {
     }
        
     public NodoArbol DECLARACION() {
+        if (ParserError) return null;
+
         NodoArbol nodo = new NodoArbol("DECLARACION");
-        
+
         switch (this.Tok) {
             case TYPEINT: 
                 nodo.agregarHijo(eat(TYPEINT)); 
@@ -136,6 +138,12 @@ public class Parser {
         NodoArbol nodo = new NodoArbol("ESTATUTO");
         
         switch (this.Tok) {
+            case TYPEINT:
+            case TYPEFLOAT: 
+            case TYPESTRING:
+                nodo.agregarHijo(DECLARACION()); 
+                nodo.agregarHijo(ESTATUTO()); 
+                break;
             case ID:
                 nodo.agregarHijo(eat(ID)); 
                 nodo.agregarHijo(eat(ASIG)); 

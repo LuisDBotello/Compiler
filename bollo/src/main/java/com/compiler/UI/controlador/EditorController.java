@@ -42,7 +42,7 @@ public class EditorController {
 
     private CodeArea codeArea;
 
-    private File carpetaBase = new File("C:/Users/luisd/Documents/Compilador/bollo");
+    private File carpetaBase = new File("C:/Users/luisd/Documents/5to Semestre/Lenguajes y Automatas 2/Compiler/Compiler/bollo/");
 
     private Escaner escaner;
         
@@ -83,6 +83,7 @@ public class EditorController {
         treeArchivos.setRoot(rootItem);
         treeArchivos.setShowRoot(true);
         rootItem.setExpanded(true);
+        
     }
 
     private TreeItem<File> crearNodo(File file) {

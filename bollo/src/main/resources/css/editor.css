@@ -1,6 +1,6 @@
 /* Contenedor Principal */
 SplitPane {
-    -fx-min-width: 1440px;
+    /*-fx-min-width: 1440px;*/
     -fx-min-height: 0px;
     -fx-background-color: #0d1117;
     -fx-padding: 10px;
