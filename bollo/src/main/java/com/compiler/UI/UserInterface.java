@@ -13,7 +13,7 @@ public class UserInterface extends Application {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/compiler/UI/login.fxml"));
         VBox root = loader.load();
 
-        Scene scene = new Scene(root, 700, 600);    
+        Scene scene = new Scene(root, 600, 400);    
         scene.getStylesheets().add(getClass().getResource("/css/login.css").toExternalForm());
 
         primaryStage.setTitle("Login FXML");

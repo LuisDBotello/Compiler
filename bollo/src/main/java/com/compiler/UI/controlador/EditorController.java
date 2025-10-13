@@ -282,7 +282,9 @@ public class EditorController {
             );
         }
         tabResultados.getSelectionModel().select(0);
-
+        // Posicionar el scroll al principio de codeAreaLexico
+        codeAreaLexico.moveTo(0);
+        codeAreaLexico.requestFollowCaret();
     }
 
     @FXML

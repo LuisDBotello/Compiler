@@ -9,6 +9,7 @@ public class Parser {
         TYPEFLOAT = 7, TYPESTRING = 8, ID = 9, FLOAT = 10, NUM = 11, COMP = 12, ASIG = 13, OPER = 14, 
         LIM = 15, PAROPEN = 16, PARCLOSE = 17, LLAVEOPEN = 18, LLAVECLOSE = 19, EOL = 20, CADENA = 21, FOR = 22,
         INC = 23, DEC = 24;
+
     public String[] Words = {"if", "print", "inputInt", "inputFloat", "inputString", "else", "\"Typeint\"", 
     "\"Typefloat\"", "\"TypeString\"", "ID", "FLOAT", "NUM", "comparator", "=", "operator", "\"$$\"", "(", 
     ")", "{", "}", ";", "CADENA", "for", "++", "--"};
@@ -27,9 +28,7 @@ public class Parser {
     }
 
     public boolean P() {
-        System.out.println("ESCANER:");
-        System.out.println("Tokens: " + Escaneado.tokens);
-        System.out.println("\nPARSER:");
+
         this.Tok = (int) Escaneado.tokens.get(i);
         
         // Crear nodo raíz del árbol
@@ -62,10 +61,21 @@ public class Parser {
                     case ASIG: 
                         nodo.agregarHijo(eat(ASIG)); 
                         switch (this.Tok) {
-                            case NUM: nodo.agregarHijo(eat(NUM)); nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
-                            case INPUTINT: nodo.agregarHijo(eat(INPUTINT)); nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
+                            case NUM: 
+                                nodo.agregarHijo(eat(NUM)); 
+                                nodo.agregarHijo(eat(EOL)); 
+                                nodo.agregarHijo(DECLARACION()); 
+                                break;
+                            case INPUTINT: 
+                                nodo.agregarHijo(eat(INPUTINT)); 
+                                nodo.agregarHijo(eat(EOL)); 
+                                nodo.agregarHijo(DECLARACION()); 
+                                break;
                         } break;
-                    case EOL: nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
+                    case EOL: 
+                        nodo.agregarHijo(eat(EOL)); 
+                        nodo.agregarHijo(DECLARACION()); 
+                        break;
                 } break;
             case TYPEFLOAT: 
                 nodo.agregarHijo(eat(TYPEFLOAT)); 
@@ -74,10 +84,21 @@ public class Parser {
                     case ASIG: 
                         nodo.agregarHijo(eat(ASIG)); 
                         switch (this.Tok) {
-                            case FLOAT: nodo.agregarHijo(eat(FLOAT)); nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
-                            case INPUTFLOAT: nodo.agregarHijo(eat(INPUTFLOAT)); nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
+                            case FLOAT: 
+                                nodo.agregarHijo(eat(FLOAT)); 
+                                nodo.agregarHijo(eat(EOL)); 
+                                nodo.agregarHijo(DECLARACION()); 
+                                break;
+                            case INPUTFLOAT: 
+                                nodo.agregarHijo(eat(INPUTFLOAT)); 
+                                nodo.agregarHijo(eat(EOL)); 
+                                nodo.agregarHijo(DECLARACION()); 
+                                break;
                         } break;
-                    case EOL: nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
+                    case EOL: 
+                        nodo.agregarHijo(eat(EOL)); 
+                        nodo.agregarHijo(DECLARACION()); 
+                        break;
                 } break;
             case TYPESTRING: 
                 nodo.agregarHijo(eat(TYPESTRING)); 
@@ -86,13 +107,24 @@ public class Parser {
                     case ASIG: 
                         nodo.agregarHijo(eat(ASIG)); 
                         switch (this.Tok) {
-                            case CADENA: nodo.agregarHijo(eat(CADENA)); nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
-                            case INPUTSTRING: nodo.agregarHijo(eat(INPUTSTRING)); nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
+                            case CADENA: 
+                                nodo.agregarHijo(eat(CADENA)); 
+                                nodo.agregarHijo(eat(EOL)); 
+                                nodo.agregarHijo(DECLARACION()); 
+                                break;
+                            case INPUTSTRING: 
+                                nodo.agregarHijo(eat(INPUTSTRING)); 
+                                nodo.agregarHijo(eat(EOL)); 
+                                nodo.agregarHijo(DECLARACION()); 
+                                break;
                             default:
                                 Error();
                                 break;
                         } break;
-                    case EOL: nodo.agregarHijo(eat(EOL)); nodo.agregarHijo(DECLARACION()); break;
+                    case EOL: 
+                        nodo.agregarHijo(eat(EOL)); 
+                        nodo.agregarHijo(DECLARACION()); 
+                        break;
                 } break;
             default: 
                 return ESTATUTO();

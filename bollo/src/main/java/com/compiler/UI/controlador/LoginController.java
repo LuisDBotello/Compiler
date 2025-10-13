@@ -50,6 +50,7 @@ public class LoginController {
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.setTitle("Visual Dannys Editor");
+        stage.setMaximized(true);
         stage.show();   
     }
 }

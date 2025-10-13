@@ -1,7 +1,7 @@
 /* Contenedor Principal */
 SplitPane {
     -fx-min-width: 1440px;
-    -fx-min-height: 800px;
+    -fx-min-height: 0px;
     -fx-background-color: #0d1117;
     -fx-padding: 10px;
 }
@@ -37,7 +37,7 @@ SplitPane:horizontal .split-pane-divider {
 
 /* Otros divisores verticales (si los hay) */
 SplitPane:vertical .split-pane-divider {
-    -fx-pref-height: 4px;
+    -fx-pref-height: 5px;
     -fx-background-color: transparent;
 }
 
@@ -54,6 +54,7 @@ SplitPane:vertical .split-pane-divider:hover {
     -fx-background-radius: 8px;
     -fx-pref-width: 280px;
     -fx-padding: 20px;
+    -fx-translate-y: 0px;
 }
 
 /* Panel Derecho - Editor */
@@ -77,7 +78,7 @@ SplitPane:vertical .split-pane-divider:hover {
     -fx-font-family: 'Consolas', 'Courier New', monospace;
     -fx-font-size: 14px;
     -fx-padding: 15px;
-    -fx-pref-height: 600px;
+    /*-fx-pref-height: 600px;*/
     -fx-max-height: Infinity;
 }
 
@@ -258,7 +259,7 @@ VBox {
     -fx-font-size: 16px;
     -fx-padding: 8px;
     -fx-opacity: 0.9;
-    -fx-pref-height: 100px;
+    -fx-pref-height: 200px;
     -fx-max-height: Infinity;
 }
 
@@ -299,10 +300,11 @@ VBox {
     -fx-font-size: 14px;
     -fx-alignment: center;
     -fx-translate-y: 5px;
+    
 }
 
 .tab-pane .tab:selected {
-    -fx-background-color: #583501ab
+    -fx-background-color: #3e004fab
 }
 
 .tab-pane .tab:selected .tab-label {
@@ -310,7 +312,7 @@ VBox {
 }
 
 .tab-pane .tab:hover {
-    -fx-background-color: #30363d;
+    -fx-background-color: #57006fab;
 }
 
 .tab-pane .tab-content-area {
