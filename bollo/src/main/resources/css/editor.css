@@ -302,7 +302,7 @@ VBox {
 }
 
 .tab-pane .tab:selected {
-    -fx-background-color: #015801ab
+    -fx-background-color: #583501ab
 }
 
 .tab-pane .tab:selected .tab-label {

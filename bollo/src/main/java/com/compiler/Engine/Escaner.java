@@ -16,9 +16,10 @@ public class Escaner {
     
     private int lineaActual = 1;
     private boolean hasError = false;    
-    String TokensString;
-    String CodigoFuente;
-    ArrayList<Integer> tokens = new ArrayList<>();
+    private String TokensString;
+    private String CodigoFuente;
+    public ArrayList<Integer> tokens = new ArrayList<>();
+    public ArrayList<String> lexemas = new ArrayList<>(); // NUEVO: Lista de lexemas
 
     public Escaner(String codigoFuente) {
         this.CodigoFuente = codigoFuente;
@@ -33,6 +34,7 @@ public class Escaner {
         this.lineaActual = 1;
         this.hasError = false;
         this.tokens.clear();
+        this.lexemas.clear(); // NUEVO: Limpiar lexemas
         
         char[] chars = this.CodigoFuente.toCharArray();
         StringBuilder Token = new StringBuilder();
@@ -63,6 +65,7 @@ public class Escaner {
                         esReservada = true;
                         Scanned.append(palabra + "\n");
                         tokens.add(k);
+                        lexemas.add(palabra); // NUEVO: Guardar lexema
                         break;
                     }
                 }
@@ -70,6 +73,7 @@ public class Escaner {
                     esReservada = true;
                     Scanned.append(palabra + "\n");
                     tokens.add(22);
+                    lexemas.add(palabra); // NUEVO: Guardar lexema
                 }
                 if (esReservada) continue;
     
@@ -79,6 +83,7 @@ public class Escaner {
                         esTipo = true;
                         Scanned.append(palabra + "\n");
                         tokens.add(6+k);
+                        lexemas.add(palabra); // NUEVO: Guardar lexema
                         break;
                     }
                 }
@@ -86,6 +91,7 @@ public class Escaner {
     
                 Scanned.append(palabra + "\n");
                 tokens.add(9);
+                lexemas.add(palabra); // NUEVO: Guardar lexema (identificador)
                 continue;
             }
     
@@ -109,12 +115,15 @@ public class Escaner {
                 if (Token.toString().endsWith(".")) {
                     Scanned.append("ERROR: Número inválido (" + Token + ")\n");
                 } else {
+                    String numero = Token.toString();
                     if (esFloat) {
                         tokens.add(10);
-                        Scanned.append(Token + "\n");
+                        lexemas.add(numero); // NUEVO: Guardar lexema
+                        Scanned.append(numero + "\n");
                     } else {
                         tokens.add(11);
-                        Scanned.append(Token + "\n");
+                        lexemas.add(numero); // NUEVO: Guardar lexema
+                        Scanned.append(numero + "\n");
                     }
                 }
                 continue;
@@ -127,10 +136,12 @@ public class Escaner {
                 if (i < chars.length && chars[i] == '=') { 
                     Token.append('='); 
                     tokens.add(12); 
+                    lexemas.add("=="); // NUEVO: Guardar lexema
                     Scanned.append(Token + "\n");
                     i++; 
                 } else {
                     tokens.add(13); 
+                    lexemas.add("="); // NUEVO: Guardar lexema
                     Scanned.append("=\n");
                 }
                 continue;
@@ -144,13 +155,16 @@ public class Escaner {
                     Token.append('='); 
                     i++; 
                 }
+                String comparador = Token.toString();
                 tokens.add(12); 
-                Scanned.append(Token + "\n");
+                lexemas.add(comparador); // NUEVO: Guardar lexema
+                Scanned.append(comparador + "\n");
                 continue;
             }
             
             if (c == '+' && i + 1 < chars.length && chars[i+1] == '+') {
                 tokens.add(23); 
+                lexemas.add("++"); // NUEVO: Guardar lexema
                 i+=2;
                 Scanned.append(INC + "\n");
                 continue;
@@ -158,57 +172,65 @@ public class Escaner {
             
             if (c == '-' && i + 1 < chars.length && chars[i+1] == '-') {
                 tokens.add(24); 
+                lexemas.add("--"); // NUEVO: Guardar lexema
                 i+=2;
                 Scanned.append(DEC + "\n");
                 continue;
             }            
             
             if (c == '+' || c == '-' || c == '*' || c == '/') {
-                i++;
                 tokens.add(14);
+                lexemas.add(String.valueOf(c)); // NUEVO: Guardar lexema
                 Scanned.append(c + "\n");
+                i++;
                 continue;
             }
 
             if (c == '$' && i + 1 < chars.length && chars[i + 1] == '$') {
-                i += 2;
                 tokens.add(15);
+                lexemas.add("$$"); // NUEVO: Guardar lexema
                 Scanned.append("$$\n");
+                i += 2;
                 continue;
             }
     
             if (c == '(') {
-                i++;
                 tokens.add(16);
+                lexemas.add("("); // NUEVO: Guardar lexema
                 Scanned.append(c + "\n");
+                i++;
                 continue;
             }
             
             if (c == ')') {
-                i++;
                 tokens.add(17);
+                lexemas.add(")"); // NUEVO: Guardar lexema
                 Scanned.append(c + "\n");
+                i++;
                 continue;
             }
     
             if (c == '{') {
-                i++;
                 tokens.add(18);
+                lexemas.add("{"); // NUEVO: Guardar lexema
                 Scanned.append(c + "\n");
+                i++;
                 continue;
             }
             
             if (c == '}') {
-                i++;
                 tokens.add(19);
+                lexemas.add("}"); // NUEVO: Guardar lexema
                 Scanned.append(c + "\n");
+                i++;
                 continue;
             }
             
             if (c == ';') {
-                i++;
                 tokens.add(20);
+                lexemas.add(";"); // NUEVO: Guardar lexema
                 Scanned.append(";\n");
+                i++;
                 continue;
             }
     
@@ -222,16 +244,19 @@ public class Escaner {
                 }
                 if (i < chars.length && chars[i] == '"') {
                     Token.append(chars[i]);
-                    i++;
+                    String cadena = Token.toString();
                     tokens.add(21);
-                    Scanned.append(Token + "\n");
+                    lexemas.add(cadena); // NUEVO: Guardar lexema
+                    Scanned.append(cadena + "\n");
+                    i++;
                 }
                 continue;
             }
             
             // Token inválido
             this.hasError = true;
-            tokens.add(-1);                
+            tokens.add(-1);
+            lexemas.add(String.valueOf(c)); // NUEVO: Guardar el carácter inválido
             Scanned.append("ERROR: Token inválido ('" + c + "') en línea " + this.lineaActual + "\n");
             i++;
         }
@@ -252,6 +277,7 @@ public class Escaner {
         // Mapa para almacenar errores únicos: clave = "carácter_línea"
         Map<String, String> uniqueErrors = new LinkedHashMap<>();
         int tokenCount = 0;
+        int lexemaIndex = 0;
 
         for (String line : lines) {
             if (line.startsWith("ERROR:")) {
@@ -272,9 +298,12 @@ public class Escaner {
                             invalidChar, lineNumber));
                     }
                 }
+                lexemaIndex++;
             } else if (!line.trim().isEmpty()) {
+                // Línea válida (token reconocido)
                 formattedTokens.append("TOKEN: ").append(line).append("\n");
                 tokenCount++;
+                lexemaIndex++;
             }
         }
 
@@ -328,5 +357,9 @@ public class Escaner {
     
     public ArrayList<Integer> getTokens() {
         return tokens;
+    }
+    
+    public ArrayList<String> getLexemas() {
+        return lexemas;
     }
 }
