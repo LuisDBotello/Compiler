@@ -1,6 +1,5 @@
 package com.compiler.Engine;
 
-import java.util.ArrayList;
 import javax.swing.JTextArea;
 
 //El nivel de abstacción se fue a los cielos en esta clase 
