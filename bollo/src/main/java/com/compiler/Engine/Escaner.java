@@ -277,7 +277,6 @@ public class Escaner {
         // Mapa para almacenar errores únicos: clave = "carácter_línea"
         Map<String, String> uniqueErrors = new LinkedHashMap<>();
         int tokenCount = 0;
-        int lexemaIndex = 0;
 
         for (String line : lines) {
             if (line.startsWith("ERROR:")) {
@@ -298,12 +297,10 @@ public class Escaner {
                             invalidChar, lineNumber));
                     }
                 }
-                lexemaIndex++;
             } else if (!line.trim().isEmpty()) {
                 // Línea válida (token reconocido)
                 formattedTokens.append("TOKEN: ").append(line).append("\n");
                 tokenCount++;
-                lexemaIndex++;
             }
         }
 
