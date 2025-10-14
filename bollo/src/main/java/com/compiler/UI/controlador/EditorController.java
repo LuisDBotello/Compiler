@@ -1,15 +1,18 @@
 package com.compiler.UI.controlador;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import javafx.scene.input.KeyCode;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +27,7 @@ public class EditorController {
     @FXML
     private TabPane tabResultados; 
     private CodeArea codeAreaLexico, codeAreaSintactico, codeAreaSemantico, codeAreaCodigoGenerado;
+    private NodoArbol arbolSintactico;
 
     @FXML
     private VBox contenedorEditor;
@@ -35,14 +39,14 @@ public class EditorController {
     private TreeView<File> treeArchivos;
     
     private int tamanoFuente = 14; // Tamaño inicial
-    private int tamanoFuenteResultados = 12; // Tamaño inicial para resultados
+    private int tamanoFuenteResultados = 14; // Tamaño inicial para resultados
 
     @FXML
     private VBox panelDerecho;
 
     private CodeArea codeArea;
 
-    private File carpetaBase = new File("C:/Users/luisd/Documents/5to Semestre/Lenguajes y Automatas 2/Compiler/Compiler/bollo/");
+    private File carpetaBase = new File("bollo/");
 
     private Escaner escaner;
         
@@ -52,6 +56,37 @@ public class EditorController {
         codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.getStyleClass().add("code-area");
+        
+        // Manejar la tecla Tab para insertar espacios
+        codeArea.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.TAB) {
+                event.consume(); // Evitar el comportamiento por defecto
+                
+                IndexRange selection = codeArea.getSelection();
+                int selectionLength = selection.getLength();
+                
+                System.out.println("Tab presionado - Selección length: " + selectionLength);
+                
+                // Si hay texto seleccionado (más de un carácter), indentar/desindentar
+                if (selectionLength > 0) {
+                    System.out.println("Indentando selección");
+                    if (event.isShiftDown()) {
+                        // Shift+Tab: Desindentar
+                        desindentarSeleccion(codeArea);
+                    } else {
+                        // Tab: Indentar
+                        indentarSeleccion(codeArea);
+                    }
+                } else {
+                    // No hay selección: insertar 4 espacios
+                    System.out.println("Insertando 4 espacios");
+                    int caretPosition = codeArea.getCaretPosition();
+                    codeArea.replaceText(caretPosition, caretPosition, "    ");
+                }
+            }
+        });
+        
+        // Actualizar tamaño de fuente (esto aplicará el estilo inicial)
         actualizarTamanoFuente();
         
         // Agregar al contenedor del editor
@@ -73,6 +108,7 @@ public class EditorController {
         cargarExplorador(carpetaBase);
         configurarClickArchivo();
     }
+
 
     private void cargarExplorador(File carpeta) {
         if (!carpeta.exists() || !carpeta.isDirectory()) {
@@ -198,12 +234,13 @@ public class EditorController {
     
     @FXML
     private void actualizarTamanoFuente() {
-        // Actualizar CodeArea principal
+        // Actualizar CodeArea principal - INCLUIR tab-size aquí
         codeArea.setStyle(
             "-fx-font-size: " + tamanoFuente + "px;" +
             "-fx-highlight-fill: #06360095;" +
             "-fx-highlight-text-fill: #ffffff;" +
-            "-rtfx-selection-background-color: #06360095;"
+            "-rtfx-selection-background-color: #06360095;" +
+            "-fx-tab-size: 4;"
         );
 
         // Actualizar todos los CodeAreas de resultados
@@ -269,7 +306,7 @@ public class EditorController {
         codeAreaLexico.setStyle(
             "-fx-font-family: 'Consolas', 'Courier New', monospace;" +
             "-fx-font-size: " + tamanoFuenteResultados + "px;" +
-            "-fx-background-color: #02541392;"
+            "-fx-background-color: #00390b6e;"
         );
         
         escaner.Scan();
@@ -290,7 +327,8 @@ public class EditorController {
 
     @FXML
     private void parsearCodigo() {
-        try {
+        try {            
+            tabResultados.getSelectionModel().select(1);
             Parser parser = new Parser(escaner, this.codeAreaSintactico);
             boolean exitoParser = parser.P();
             
@@ -327,9 +365,10 @@ public class EditorController {
                 this.codeAreaSintactico.setStyle(
                     "-fx-font-family: 'Consolas', 'Courier New', monospace;" +
                     "-fx-font-size: " + tamanoFuenteResultados + "px;" +
-                    "-fx-background-color: #02541392;"
+                    "-fx-background-color: #00390b6e;"
                 );
-                
+                this.setArbolSintactico(arbol);
+
                 resultado.append("✓ ANÁLISIS SINTÁCTICO EXITOSO\n");
                 resultado.append("═══════════════════════════════════\n\n");
                 resultado.append("ÁRBOL SINTÁCTICO:\n\n");
@@ -358,9 +397,8 @@ public class EditorController {
                 resultado.append("═══════════════════════════════════\n");
                 resultado.append("Revise la consola para más detalles del error.");
             }
-            
             codeAreaSintactico.replaceText(resultado.toString());
-            tabResultados.getSelectionModel().select(1);
+
             
         } catch (IndexOutOfBoundsException e) {
             this.codeAreaSintactico.setStyle(
@@ -399,6 +437,10 @@ public class EditorController {
     @FXML
     private void analizarSemantico() {
         codeAreaSemantico.replaceText("Análisis semántico:\n...");
+
+        Semantico S = new Semantico(this.getArbolSintactico());
+        codeAreaSemantico.replaceText(S.ArbolSintactico.imprimirArbol());
+
     }
 
     @FXML
@@ -410,4 +452,108 @@ public class EditorController {
     private void generarObjeto() {
         codeAreaCodigoGenerado.appendText("\n\nCódigo objeto:\n...");
     }
+
+    //UTILERIA
+    // Método para indentar selección
+    private void indentarSeleccion(CodeArea codeArea) {
+        IndexRange selection = codeArea.getSelection();
+        int start = selection.getStart();
+        int end = selection.getEnd();
+        
+        // Obtener el texto seleccionado
+        String selectedText = codeArea.getText(start, end);
+        
+        // Encontrar el inicio de la primera línea
+        int lineStart = start;
+        while (lineStart > 0 && codeArea.getText(lineStart - 1, lineStart).charAt(0) != '\n') {
+            lineStart--;
+        }
+        
+        // Encontrar el final de la última línea
+        int lineEnd = end;
+        String fullText = codeArea.getText();
+        while (lineEnd < fullText.length() && fullText.charAt(lineEnd) != '\n') {
+            lineEnd++;
+        }
+        
+        // Obtener todas las líneas
+        String[] lines = codeArea.getText(lineStart, lineEnd).split("\n", -1);
+        
+        // Indentar cada línea
+        StringBuilder indented = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            indented.append("    ").append(lines[i]);
+            if (i < lines.length - 1) {
+                indented.append("\n");
+            }
+        }
+        
+        // Reemplazar el texto
+        codeArea.replaceText(lineStart, lineEnd, indented.toString());
+        
+        // Restaurar la selección ajustada
+        codeArea.selectRange(lineStart, lineStart + indented.length());
+    }
+
+    // Método para desindentar selección
+    private void desindentarSeleccion(CodeArea codeArea) {
+        IndexRange selection = codeArea.getSelection();
+        int start = selection.getStart();
+        int end = selection.getEnd();
+        
+        // Encontrar el inicio de la primera línea
+        int lineStart = start;
+        while (lineStart > 0 && codeArea.getText(lineStart - 1, lineStart).charAt(0) != '\n') {
+            lineStart--;
+        }
+        
+        // Encontrar el final de la última línea
+        int lineEnd = end;
+        String fullText = codeArea.getText();
+        while (lineEnd < fullText.length() && fullText.charAt(lineEnd) != '\n') {
+            lineEnd++;
+        }
+        
+        // Obtener todas las líneas
+        String[] lines = codeArea.getText(lineStart, lineEnd).split("\n", -1);
+        
+        // Desindentar cada línea (remover hasta 4 espacios al inicio)
+        StringBuilder deindented = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            // Remover hasta 4 espacios o tabs del inicio
+            if (line.startsWith("    ")) {
+                deindented.append(line.substring(4));
+            } else if (line.startsWith("\t")) {
+                deindented.append(line.substring(1));
+            } else {
+                // Remover espacios individuales (hasta 4)
+                int spacesToRemove = 0;
+                while (spacesToRemove < 4 && spacesToRemove < line.length() && line.charAt(spacesToRemove) == ' ') {
+                    spacesToRemove++;
+                }
+                deindented.append(line.substring(spacesToRemove));
+            }
+            
+            if (i < lines.length - 1) {
+                deindented.append("\n");
+            }
+        }
+        
+        // Reemplazar el texto
+        codeArea.replaceText(lineStart, lineEnd, deindented.toString());
+        
+        // Restaurar la selección ajustada
+        codeArea.selectRange(lineStart, lineStart + deindented.length());
+    }
+    
+    public NodoArbol getArbolSintactico() {
+        return arbolSintactico;
+    }
+
+
+    public void setArbolSintactico(NodoArbol arbolSintactico) {
+        this.arbolSintactico = arbolSintactico;
+    }
+
 }

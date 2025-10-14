@@ -52,7 +52,9 @@ SplitPane:vertical .split-pane-divider:hover {
     -fx-border-width: 0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
-    -fx-pref-width: 280px;
+    -fx-min-width: 230px;
+    -fx-pref-width: 250px;
+    -fx-max-width: 400px;
     -fx-padding: 20px;
     -fx-translate-y: 0px;
 }

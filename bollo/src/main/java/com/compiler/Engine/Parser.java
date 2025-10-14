@@ -6,14 +6,15 @@ import org.fxmisc.richtext.CodeArea;
 
 public class Parser {
 
-    private final int IF = 0, PRINT = 1, INPUTINT = 2, INPUTFLOAT = 3, INPUTSTRING = 4, ELSE = 5, TYPEINT = 6, 
-        TYPEFLOAT = 7, TYPESTRING = 8, ID = 9, FLOAT = 10, NUM = 11, COMP = 12, ASIG = 13, OPER = 14, 
-        LIM = 15, PAROPEN = 16, PARCLOSE = 17, LLAVEOPEN = 18, LLAVECLOSE = 19, EOL = 20, CADENA = 21, FOR = 22,
-        INC = 23, DEC = 24;
+    private final int IF = 0, PRINT = 1, INPUTINT = 2, INPUTFLOAT = 3, INPUTSTRING = 4, ELSE = 5, TIPO_DATO_INT = 6, 
+        TIPO_DATO_FLOAT = 7, TIPO_DATO_STRING = 8, ID = 9, FLOAT = 10, NUM = 11, COMP = 12, ASIG = 13, OPER = 14, 
+        PAROPEN = 16, PARCLOSE = 17, LLAVEOPEN = 18, LLAVECLOSE = 19, EOL = 20, CADENA = 21, FOR = 22,
+        INC = 23, DEC = 24, MAIN = 25;
 
-    private final String[] Words = {"if", "print", "inputInt", "inputFloat", "inputString", "else", "\"Typeint\"", 
-    "\"Typefloat\"", "\"TypeString\"", "ID", "FLOAT", "NUM", "comparator", "=", "operator", "\"$$\"", "(", 
-    ")", "{", "}", ";", "CADENA", "for", "++", "--"};
+    private final String[] Words = {"if", "print", "inputInt", "inputFloat", "inputString", "else", "\"TIPO_INT\"", 
+    "\"TIPO_FLOAT\"", "\"TIPO_STRING\"", "ID", "FLOAT", "NUM", "COMPARADOR", "=", "OPERADOR", "\"$$\"", "(", 
+    ")", "{", "}", ";", "CADENA", "for", "++", "--", "main"};
+    
     private int i = 0;
     private int Tok;
     private boolean ParserError = false;
@@ -28,20 +29,62 @@ public class Parser {
     }
 
     public boolean P() {
-
         this.Tok = (int) Escaneado.tokens.get(i);
         
         // Crear nodo raíz del árbol
         arbolSintactico = new NodoArbol("PROGRAMA");
         
-        NodoArbol nodoLim = eat(LIM);
-        if (nodoLim != null) arbolSintactico.agregarHijo(nodoLim);
+        // Verificar main
+        NodoArbol nodoMain = eat(MAIN);
+        if (nodoMain == null) {
+            Error();
+            System.out.println("Error: Se esperaba 'main' al inicio del programa");
+            return false;
+        }
+        arbolSintactico.agregarHijo(nodoMain);
         
+        // Verificar (
+        NodoArbol nodoParOpen = eat(PAROPEN);
+        if (nodoParOpen == null) {
+            Error();
+            System.out.println("Error: Se esperaba '(' después de main");
+            return false;
+        }
+        arbolSintactico.agregarHijo(nodoParOpen);
+        
+        // Verificar )
+        NodoArbol nodoParClose = eat(PARCLOSE);
+        if (nodoParClose == null) {
+            Error();
+            System.out.println("Error: Se esperaba ')' después de '('");
+            return false;
+        }
+        arbolSintactico.agregarHijo(nodoParClose);
+        
+        // Verificar {
+        NodoArbol nodoLlaveOpen = eat(LLAVEOPEN);
+        if (nodoLlaveOpen == null) {
+            Error();
+            System.out.println("Error: Se esperaba '{' después de main()");
+            return false;
+        }
+        arbolSintactico.agregarHijo(nodoLlaveOpen);
+        
+        // Procesar estatutos
         NodoArbol nodoEstatuto = ESTATUTO();
         if (nodoEstatuto != null) arbolSintactico.agregarHijo(nodoEstatuto);
-
-        NodoArbol nodoLimFin = eat(LIM);
-        if (nodoLimFin != null) arbolSintactico.agregarHijo(nodoLimFin);
+        System.out.println("Terminó Estatuto en P");
+        
+        // Verificar } final - CRÍTICO
+        NodoArbol nodoLlaveClose = eat(LLAVECLOSE);
+        if (nodoLlaveClose == null) {
+            if (!this.ParserError) {
+                Error();
+            }
+            System.out.println("Error: Se esperaba '}' al final del programa");
+            return false;
+        }
+        arbolSintactico.agregarHijo(nodoLlaveClose);
         
         return !this.ParserError;
     }    
@@ -56,8 +99,8 @@ public class Parser {
         NodoArbol nodo = new NodoArbol("DECLARACION");
 
         switch (this.Tok) {
-            case TYPEINT: 
-                nodo.agregarHijo(eat(TYPEINT)); 
+            case TIPO_DATO_INT: 
+                nodo.agregarHijo(eat(TIPO_DATO_INT)); 
                 nodo.agregarHijo(eat(ID)); 
                 switch (this.Tok) {
                     case ASIG: 
@@ -79,8 +122,8 @@ public class Parser {
                         nodo.agregarHijo(DECLARACION()); 
                         break;
                 } break;
-            case TYPEFLOAT: 
-                nodo.agregarHijo(eat(TYPEFLOAT)); 
+            case TIPO_DATO_FLOAT: 
+                nodo.agregarHijo(eat(TIPO_DATO_FLOAT)); 
                 nodo.agregarHijo(eat(ID)); 
                 switch (this.Tok) {
                     case ASIG: 
@@ -102,8 +145,8 @@ public class Parser {
                         nodo.agregarHijo(DECLARACION()); 
                         break;
                 } break;
-            case TYPESTRING: 
-                nodo.agregarHijo(eat(TYPESTRING)); 
+            case TIPO_DATO_STRING: 
+                nodo.agregarHijo(eat(TIPO_DATO_STRING)); 
                 nodo.agregarHijo(eat(ID)); 
                 switch (this.Tok) {
                     case ASIG: 
@@ -140,9 +183,9 @@ public class Parser {
     NodoArbol nodo = new NodoArbol("ESTATUTO");
     
     switch (this.Tok) {
-        case TYPEINT:
-        case TYPEFLOAT: 
-        case TYPESTRING:
+        case TIPO_DATO_INT:
+        case TIPO_DATO_FLOAT: 
+        case TIPO_DATO_STRING:
             nodo.agregarHijo(DECLARACION()); 
             nodo.agregarHijo(ESTATUTO()); 
             break;
@@ -256,8 +299,8 @@ public class Parser {
             NodoArbol nodoFor = new NodoArbol("FOR");
             nodoFor.agregarHijo(eat(FOR));
             nodoFor.agregarHijo(eat(PAROPEN));
-            if(this.Tok == TYPEINT) {
-                nodoFor.agregarHijo(eat(TYPEINT)); 
+            if(this.Tok == TIPO_DATO_INT) {
+                nodoFor.agregarHijo(eat(TIPO_DATO_INT)); 
                 nodoFor.agregarHijo(eat(ID));   
             } else if(this.Tok == ID)    
                 nodoFor.agregarHijo(eat(ID));                     
@@ -315,9 +358,6 @@ public class Parser {
             nodo.agregarHijo(nodoFor);
             nodo.agregarHijo(ESTATUTO());
             break;
-
-        default:
-            return nodo;
     }
     return nodo;
 }

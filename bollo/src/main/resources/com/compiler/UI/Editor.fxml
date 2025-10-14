@@ -10,16 +10,16 @@
 <SplitPane xmlns="http://javafx.com/javafx/25"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.compiler.UI.controlador.EditorController" orientation="HORIZONTAL"
-            dividerPositions="0.25"
+            dividerPositions="0.16" 
             stylesheets="@/css/editor.css">
 
-    <VBox spacing="10" prefWidth="250" maxWidth="Infinity" id="VBoxFiles" fx:id="panelIzquierdo">
+    <VBox spacing="10" minWidth="150" prefWidth="200" id="VBoxFiles" fx:id="panelIzquierdo">
         <Label text="Explorador de Archivos" style="-fx-font-weight: bold;"/>
-        <TreeView fx:id="treeArchivos" prefHeight="600"/>
+        <TreeView fx:id="treeArchivos" prefHeight="600" VBox.vgrow="ALWAYS"/>
         <Button text="Refrescar" onAction="#refrescarExplorador"/>
     </VBox>
 
-    <VBox spacing="8" VBox.vgrow="ALWAYS" style="-fx-padding: 10;" id="VBoxEditor" fx:id="panelDerecho" maxHeight="Infinity">    
+    <VBox spacing="8" VBox.vgrow="ALWAYS" style="-fx-padding: 10;" id="VBoxEditor" fx:id="panelDerecho">    
         
         <HBox spacing="8" style="-fx-translate-x: 10px; -fx-translate-y: -10px;">        
             <Button text="A+" onAction="#aumentarTexto"/>
@@ -33,16 +33,16 @@
         </HBox>
 
         <!-- SplitPane vertical para dividir editor y resultados -->
-        <SplitPane orientation="VERTICAL" VBox.vgrow="ALWAYS" dividerPositions="0.6" fx:id="splitVertical" maxHeight="Infinity"
-            style="-fx-translate-y: -0px; -fx-max-height: Infinity">
+        <SplitPane orientation="VERTICAL" VBox.vgrow="ALWAYS" dividerPositions="0.6" fx:id="splitVertical"
+            style="-fx-translate-y: -0px;">
             
             <!-- Panel superior: Editor principal -->
-            <VBox fx:id="contenedorEditor">
+            <VBox fx:id="contenedorEditor" SplitPane.resizableWithParent="true">
                 <!-- El codeArea principal se agregará aquí desde Java -->
             </VBox>
             
             <!-- Panel inferior: Pestañas de resultados -->
-            <TabPane fx:id="tabResultados" styleClass="resultado-tabs">
+            <TabPane fx:id="tabResultados" styleClass="resultado-tabs" SplitPane.resizableWithParent="true">
                 <Tab text="Léxico" closable="false">
                     <ScrollPane fx:id="scrollLexico" fitToWidth="true" fitToHeight="true" 
                                styleClass="resultado-scroll">

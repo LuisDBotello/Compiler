@@ -10,20 +10,32 @@ public class Semantico {
 
     public boolean ErrorSemantico = false;
     TablaDeSimbolos tds;
-    private final NodoArbol ArbolSintactico;
+    public final NodoArbol ArbolSintactico;
     
     public Semantico(NodoArbol arbolsintactico){
         this.ArbolSintactico = arbolsintactico;
     }
 
-    void Analizar(JTextArea JTACodigoFuente, boolean Apto){
+    void Analizar(){
         //if (!Apto) return; // Si no pasó el análisis sintáctico, no se analiza el semántico
         System.out.println("Analizando semánticamente...");
 
-        AnalizarScope(JTACodigoFuente); // Analiza los scopes y las variables
         //AnalizarTypes(); // Analiza los tipos de datos para que no haya type missmatch
     }
-    private void AnalizarScope(JTextArea JTACodigoFuente) {
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /* 
+    private void AnalizarScope() {
         System.out.println("Analizando Scope...");
         // Necesitamos linea a linea del codigo fuente separados por punto y coma
         // y luego analizar cada linea para ver si hay variables duplicadas en el mismo scope

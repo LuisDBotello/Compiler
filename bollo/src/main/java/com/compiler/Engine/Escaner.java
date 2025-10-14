@@ -12,7 +12,7 @@ public class Escaner {
     private final String[] PR = {"if", "print", "inputInt", "inputFloat", "inputString", "else"};
     private final String[] TIPO = {"int", "float", "String"};
     private final String FOR = "for"; //22 (2025-02-10)
-    private final String INC = "++", DEC = "--"; //INC 23, DEC 24
+    private final String INC = "++", DEC = "--", MAIN = "main"; //INC 23, DEC 24
     
     private int lineaActual = 1;
     private boolean hasError = false;    
@@ -73,6 +73,12 @@ public class Escaner {
                     esReservada = true;
                     Scanned.append(palabra + "\n");
                     tokens.add(22);
+                    lexemas.add(palabra); // NUEVO: Guardar lexema
+                }
+                if (palabra.equals(MAIN)) {
+                    esReservada = true;
+                    Scanned.append(palabra + "\n");
+                    tokens.add(25);
                     lexemas.add(palabra); // NUEVO: Guardar lexema
                 }
                 if (esReservada) continue;
