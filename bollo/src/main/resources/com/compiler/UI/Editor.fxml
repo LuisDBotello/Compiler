@@ -19,9 +19,9 @@
         <Button text="Refrescar" onAction="#refrescarExplorador"/>
     </VBox>
 
-    <VBox spacing="8" VBox.vgrow="ALWAYS" style="-fx-padding: 10;" id="VBoxEditor" fx:id="panelDerecho">    
+    <VBox spacing="0" VBox.vgrow="ALWAYS" id="VBoxEditor" fx:id="panelDerecho">    
         
-        <HBox spacing="8" style="-fx-translate-x: 10px; -fx-translate-y: -10px;">        
+        <HBox spacing="8" style="-fx-padding: 10;">        
             <Button text="A+" onAction="#aumentarTexto"/>
             <Button text="A-" onAction="#disminuirTexto"/>
             <Button text="Guardar" onAction="#guardarCodigo"/>
@@ -33,8 +33,7 @@
         </HBox>
 
         <!-- SplitPane vertical para dividir editor y resultados -->
-        <SplitPane orientation="VERTICAL" VBox.vgrow="ALWAYS" dividerPositions="0.6" fx:id="splitVertical"
-            style="-fx-translate-y: -0px;">
+        <SplitPane orientation="VERTICAL" VBox.vgrow="ALWAYS" dividerPositions="0.6" fx:id="splitVertical">
             
             <!-- Panel superior: Editor principal -->
             <VBox fx:id="contenedorEditor" SplitPane.resizableWithParent="true">

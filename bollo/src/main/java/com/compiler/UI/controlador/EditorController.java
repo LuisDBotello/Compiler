@@ -200,7 +200,7 @@ public class EditorController {
         if (tamanoFuente > 30) {
             tamanoFuente = 30;
         }
-        
+
         // Aumentar tamaño de los resultados
         tamanoFuenteResultados += 2;
         if (tamanoFuenteResultados > 24) {

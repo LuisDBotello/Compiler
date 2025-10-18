@@ -3,7 +3,7 @@ SplitPane {
     /*-fx-min-width: 1440px;*/
     -fx-min-height: 0px;
     -fx-background-color: #0d1117;
-    -fx-padding: 10px;
+    -fx-padding: 0px;
 }
 
 /* Divisor del SplitPane */
@@ -50,7 +50,7 @@ SplitPane:vertical .split-pane-divider:hover {
     -fx-background-color: #161b22;
     -fx-border-color: #30363d;
     -fx-border-width: 0;
-    -fx-border-radius: 8px;
+    -fx-border-radius: 0px;
     -fx-background-radius: 8px;
     -fx-min-width: 230px;
     -fx-pref-width: 250px;
@@ -65,8 +65,9 @@ SplitPane:vertical .split-pane-divider:hover {
     -fx-border-width: 0;
     -fx-border-radius: 0;
     -fx-background-radius: 0;
-    -fx-padding: 20px;
+    -fx-padding: 0;
     -fx-translate-y: 0;
+
 }
 
 /* Área de Código */
@@ -74,8 +75,8 @@ SplitPane:vertical .split-pane-divider:hover {
     -fx-background-color: #161b22;
     -fx-border-color: #30363d;
     -fx-border-width: 1;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
     -rtfx-text-fill: #c9d1d9;
     -fx-font-family: 'Consolas', 'Courier New', monospace;
     -fx-font-size: 14px;
@@ -94,7 +95,7 @@ SplitPane:vertical .split-pane-divider:hover {
 
 /* Números de Línea */
 .lineno {
-    -fx-background-color: #0d1117;
+    -fx-background-color: #161b22;
     -fx-text-fill: #6e7681;
     -fx-font-size: 14px;
     -fx-padding: 0 15 0 10;
@@ -273,8 +274,8 @@ VBox {
     -fx-tab-max-height: 30px;
     -fx-border-color: #30363d;
     -fx-border-width: 1;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
 }
 
 .tab-pane .tab-header-area {
