@@ -1,7 +1,5 @@
 package com.compiler.Engine;
 
-import javax.swing.JTextArea;
-
 //El nivel de abstacción se fue a los cielos en esta clase 
 public class Semantico {
 
@@ -10,9 +8,9 @@ public class Semantico {
 
     public boolean ErrorSemantico = false;
     TablaDeSimbolos tds;
-    public final NodoArbol ArbolSintactico;
+    public final NodoParseTree ArbolSintactico;
     
-    public Semantico(NodoArbol arbolsintactico){
+    public Semantico(NodoParseTree arbolsintactico){
         this.ArbolSintactico = arbolsintactico;
     }
 

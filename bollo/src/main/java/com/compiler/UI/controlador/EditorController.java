@@ -12,7 +12,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import javafx.scene.input.KeyCode;
+
+import com.compiler.Engine.ast.ParseTreeToASTConverter;
+import com.compiler.Engine.ast.ProgramaNode;
+import com.compiler.Engine.ast.ParseTreeToASTConverterDebug;
+import com.compiler.Engine.semantic.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +31,7 @@ public class EditorController {
     @FXML
     private TabPane tabResultados; 
     private CodeArea codeAreaLexico, codeAreaSintactico, codeAreaSemantico, codeAreaCodigoGenerado;
-    private NodoArbol arbolSintactico;
+    private NodoParseTree nodoParse;
 
     @FXML
     private VBox contenedorEditor;
@@ -360,8 +364,9 @@ public class EditorController {
             StringBuilder resultado = new StringBuilder();
             
             if (exitoParser && !parser.isParserError()) {
-                NodoArbol arbol = parser.getArbolSintactico();
-                
+                NodoParseTree arbol = parser.getArbolSintactico();
+
+
                 this.codeAreaSintactico.setStyle(
                     "-fx-font-family: 'Consolas', 'Courier New', monospace;" +
                     "-fx-font-size: " + tamanoFuenteResultados + "px;" +
@@ -387,7 +392,7 @@ public class EditorController {
                 resultado.append("═══════════════════════════════════\n\n");
                 resultado.append("Se encontraron errores durante el análisis sintáctico.\n\n");
                 
-                NodoArbol arbol = parser.getArbolSintactico();
+                NodoParseTree arbol = parser.getArbolSintactico();
                 if (arbol != null) {
                     resultado.append("ÁRBOL PARCIAL (hasta el punto del error):\n\n");
                     resultado.append(arbol.imprimirArbol());
@@ -438,8 +443,22 @@ public class EditorController {
     private void analizarSemantico() {
         codeAreaSemantico.replaceText("Análisis semántico:\n...");
 
-        Semantico S = new Semantico(this.getArbolSintactico());
-        codeAreaSemantico.replaceText(S.ArbolSintactico.imprimirArbol());
+        ParseTreeToASTConverter converter = new ParseTreeToASTConverter();
+        NodoParseTree parseTree = this.getArbolSintactico();
+
+        AnalizadorSemanticoAST analizadorSem = new AnalizadorSemanticoAST();
+        ProgramaNode ast = converter.convertir(parseTree);
+
+        ResultadoSemantico resultado = analizadorSem.analizar(ast);
+
+        ParseTreeToASTConverterDebug conversorDebug = new ParseTreeToASTConverterDebug();
+
+
+        this.tabResultados.getSelectionModel().select(2);
+        if (resultado.isExitoso()) 
+            this.codeAreaSemantico.setStyle("-fx-background-color: #00390b6e");
+        
+        this.codeAreaSemantico.replaceText(resultado.toString() + "\n\n\n" + ast.toTreeString(0));
 
     }
 
@@ -459,9 +478,6 @@ public class EditorController {
         IndexRange selection = codeArea.getSelection();
         int start = selection.getStart();
         int end = selection.getEnd();
-        
-        // Obtener el texto seleccionado
-        String selectedText = codeArea.getText(start, end);
         
         // Encontrar el inicio de la primera línea
         int lineStart = start;
@@ -547,13 +563,14 @@ public class EditorController {
         codeArea.selectRange(lineStart, lineStart + deindented.length());
     }
     
-    public NodoArbol getArbolSintactico() {
-        return arbolSintactico;
+    public NodoParseTree getArbolSintactico() {
+        return this.nodoParse;
     }
 
 
-    public void setArbolSintactico(NodoArbol arbolSintactico) {
-        this.arbolSintactico = arbolSintactico;
+    public void setArbolSintactico(NodoParseTree nodoParseTree) {
+        this.nodoParse = nodoParseTree;
     }
+
 
 }

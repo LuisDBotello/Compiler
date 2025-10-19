@@ -15,7 +15,6 @@ public class Assembly {
     
         public Assembly(Semantico sem){
             this.Sem = sem;
-            this.Instrucciones = sem.Instrucciones;
             this.TDS = sem.tds;        
         }
         public void Start(){

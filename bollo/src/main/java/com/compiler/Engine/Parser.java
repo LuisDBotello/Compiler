@@ -1,4 +1,5 @@
 package com.compiler.Engine;
+import com.compiler.Engine.ast.*;
 
 import java.util.ArrayList;
 
@@ -20,9 +21,10 @@ public class Parser {
     private boolean ParserError = false;
     private ArrayList<String> Calculos = new ArrayList<>();
     private final Escaner Escaneado;
-    
+    private int lineaActual = 1;
+
     // Árbol sintáctico
-    private NodoArbol arbolSintactico;
+    private NodoParseTree arbolSintactico;
 
     public Parser(Escaner escaneado, CodeArea codeAreaParser) {
         Escaneado = escaneado;
@@ -32,10 +34,10 @@ public class Parser {
         this.Tok = (int) Escaneado.tokens.get(i);
         
         // Crear nodo raíz del árbol
-        arbolSintactico = new NodoArbol("PROGRAMA");
+        arbolSintactico = new NodoParseTree("PROGRAMA");
         
         // Verificar main
-        NodoArbol nodoMain = eat(MAIN);
+        NodoParseTree nodoMain = eat(MAIN);
         if (nodoMain == null) {
             Error();
             System.out.println("Error: Se esperaba 'main' al inicio del programa");
@@ -44,7 +46,7 @@ public class Parser {
         arbolSintactico.agregarHijo(nodoMain);
         
         // Verificar (
-        NodoArbol nodoParOpen = eat(PAROPEN);
+        NodoParseTree nodoParOpen = eat(PAROPEN);
         if (nodoParOpen == null) {
             Error();
             System.out.println("Error: Se esperaba '(' después de main");
@@ -53,7 +55,7 @@ public class Parser {
         arbolSintactico.agregarHijo(nodoParOpen);
         
         // Verificar )
-        NodoArbol nodoParClose = eat(PARCLOSE);
+        NodoParseTree nodoParClose = eat(PARCLOSE);
         if (nodoParClose == null) {
             Error();
             System.out.println("Error: Se esperaba ')' después de '('");
@@ -62,7 +64,7 @@ public class Parser {
         arbolSintactico.agregarHijo(nodoParClose);
         
         // Verificar {
-        NodoArbol nodoLlaveOpen = eat(LLAVEOPEN);
+        NodoParseTree nodoLlaveOpen = eat(LLAVEOPEN);
         if (nodoLlaveOpen == null) {
             Error();
             System.out.println("Error: Se esperaba '{' después de main()");
@@ -71,12 +73,12 @@ public class Parser {
         arbolSintactico.agregarHijo(nodoLlaveOpen);
         
         // Procesar estatutos
-        NodoArbol nodoEstatuto = ESTATUTO();
+        NodoParseTree nodoEstatuto = ESTATUTO();
         if (nodoEstatuto != null) arbolSintactico.agregarHijo(nodoEstatuto);
         System.out.println("Terminó Estatuto en P");
         
         // Verificar } final - CRÍTICO
-        NodoArbol nodoLlaveClose = eat(LLAVECLOSE);
+        NodoParseTree nodoLlaveClose = eat(LLAVECLOSE);
         if (nodoLlaveClose == null) {
             if (!this.ParserError) {
                 Error();
@@ -89,14 +91,14 @@ public class Parser {
         return !this.ParserError;
     }    
     
-    public NodoArbol getArbolSintactico() {
+    public NodoParseTree getArbolSintactico() {
         return arbolSintactico;
     }
        
-    public NodoArbol DECLARACION() {
+    public NodoParseTree DECLARACION() {
         if (this.ParserError) return null;
 
-        NodoArbol nodo = new NodoArbol("DECLARACION");
+        NodoParseTree nodo = new NodoParseTree("DECLARACION");
 
         switch (this.Tok) {
             case TIPO_DATO_INT: 
@@ -177,204 +179,205 @@ public class Parser {
         return nodo;
     }
 
-    public NodoArbol ESTATUTO() {
-    if(this.ParserError) return null;
+    public NodoParseTree ESTATUTO() {
+        if(this.ParserError) return null;
 
-    NodoArbol nodo = new NodoArbol("ESTATUTO");
-    
-    switch (this.Tok) {
-        case TIPO_DATO_INT:
-        case TIPO_DATO_FLOAT: 
-        case TIPO_DATO_STRING:
-            nodo.agregarHijo(DECLARACION()); 
-            nodo.agregarHijo(ESTATUTO()); 
-            break;
-        case ID:
-            nodo.agregarHijo(eat(ID)); 
-            nodo.agregarHijo(eat(ASIG)); 
-            nodo.agregarHijo(CALCULO()); 
-            nodo.agregarHijo(eat(EOL)); 
-            nodo.agregarHijo(ESTATUTO()); 
-            break;
-        case IF:
-            NodoArbol nodoIf = new NodoArbol("IF");
-            nodoIf.agregarHijo(eat(IF)); 
-            nodoIf.agregarHijo(eat(PAROPEN));
-            switch (this.Tok) {
-                case ID:
-                case FLOAT:
-                case NUM:
-                    nodoIf.agregarHijo(eat(this.Tok)); 
-                    nodoIf.agregarHijo(eat(COMP));
-                    switch (this.Tok) {
-                        case ID:
-                        case FLOAT:
-                        case NUM:
-                            nodoIf.agregarHijo(eat(this.Tok));
-                            nodoIf.agregarHijo(eat(PARCLOSE));
-                            nodoIf.agregarHijo(eat(LLAVEOPEN));
-                            nodoIf.agregarHijo(ESTATUTO());
-                            nodoIf.agregarHijo(eat(LLAVECLOSE));
-                            nodoIf.agregarHijo(handleElse());
-                            nodo.agregarHijo(nodoIf);
-                            nodo.agregarHijo(ESTATUTO());
-                            break;
-                        case PAROPEN:
-                            nodoIf.agregarHijo(eat(PAROPEN)); 
-                            nodoIf.agregarHijo(CALCULO()); 
-                            nodoIf.agregarHijo(eat(PARCLOSE));
-                            nodoIf.agregarHijo(eat(PARCLOSE));
-                            nodoIf.agregarHijo(eat(LLAVEOPEN));
-                            nodoIf.agregarHijo(ESTATUTO());
-                            nodoIf.agregarHijo(eat(LLAVECLOSE));
-                            nodoIf.agregarHijo(handleElse());
-                            nodo.agregarHijo(nodoIf);
-                            nodo.agregarHijo(ESTATUTO());
-                            break;
-                    } 
-                    break;
-                case PAROPEN:
-                    nodoIf.agregarHijo(eat(PAROPEN));
-                    nodoIf.agregarHijo(CALCULO());
-                    nodoIf.agregarHijo(eat(PARCLOSE));
-                    nodoIf.agregarHijo(eat(COMP));
-                    switch (this.Tok) {
-                        case ID:
-                        case FLOAT:
-                        case NUM:
-                            nodoIf.agregarHijo(eat(this.Tok));  
-                            nodoIf.agregarHijo(eat(PARCLOSE));
-                            nodoIf.agregarHijo(eat(LLAVEOPEN));
-                            nodoIf.agregarHijo(ESTATUTO());
-                            nodoIf.agregarHijo(eat(LLAVECLOSE));
-                            nodoIf.agregarHijo(handleElse());
-                            nodo.agregarHijo(nodoIf);
-                            nodo.agregarHijo(ESTATUTO());
-                            break;
-                        case PAROPEN:
-                            nodoIf.agregarHijo(eat(PAROPEN)); 
-                            nodoIf.agregarHijo(CALCULO());
-                            nodoIf.agregarHijo(eat(PARCLOSE));
-                            nodoIf.agregarHijo(eat(PARCLOSE));
-                            nodoIf.agregarHijo(eat(LLAVEOPEN));
-                            nodoIf.agregarHijo(ESTATUTO());
-                            nodoIf.agregarHijo(eat(LLAVECLOSE));
-                            nodoIf.agregarHijo(handleElse());
-                            nodo.agregarHijo(nodoIf);
-                            nodo.agregarHijo(ESTATUTO());
-                            break;
-                    } 
-                    break;
-            }       
-            break;
-        case PRINT:
-            NodoArbol nodoPrint = new NodoArbol("PRINT");
-            nodoPrint.agregarHijo(eat(PRINT)); 
-            nodoPrint.agregarHijo(eat(PAROPEN));
-            switch (this.Tok) {
-                case ID:
-                    nodoPrint.agregarHijo(eat(ID)); 
-                    nodoPrint.agregarHijo(eat(PARCLOSE)); 
-                    nodoPrint.agregarHijo(eat(EOL)); 
-                    nodo.agregarHijo(nodoPrint);
-                    nodo.agregarHijo(ESTATUTO());
-                    break;
-                case CADENA:
-                    nodoPrint.agregarHijo(eat(CADENA)); 
-                    nodoPrint.agregarHijo(eat(PARCLOSE)); 
-                    nodoPrint.agregarHijo(eat(EOL)); 
-                    nodo.agregarHijo(nodoPrint);
-                    nodo.agregarHijo(ESTATUTO());
-                    break;
-                case PAROPEN:
-                    nodoPrint.agregarHijo(CALCULO()); 
-                    nodoPrint.agregarHijo(eat(PARCLOSE)); 
-                    nodoPrint.agregarHijo(eat(EOL)); 
-                    nodo.agregarHijo(nodoPrint);
-                    nodo.agregarHijo(ESTATUTO());
-                    break;
-            }  
-            break;
-        case FOR:
-            NodoArbol nodoFor = new NodoArbol("FOR");
-            nodoFor.agregarHijo(eat(FOR));
-            nodoFor.agregarHijo(eat(PAROPEN));
-            if(this.Tok == TIPO_DATO_INT) {
-                nodoFor.agregarHijo(eat(TIPO_DATO_INT)); 
-                nodoFor.agregarHijo(eat(ID));   
-            } else if(this.Tok == ID)    
-                nodoFor.agregarHijo(eat(ID));                     
+        NodoParseTree nodo = new NodoParseTree("ESTATUTO");
+        
+        switch (this.Tok) {
+            case TIPO_DATO_INT:
+            case TIPO_DATO_FLOAT: 
+            case TIPO_DATO_STRING:
+                nodo.agregarHijo(DECLARACION()); 
+                nodo.agregarHijo(ESTATUTO()); 
+                break;
+            case ID:
+                nodo.agregarHijo(eat(ID)); 
+                nodo.agregarHijo(eat(ASIG)); 
+                nodo.agregarHijo(CALCULO()); 
+                nodo.agregarHijo(eat(EOL)); 
+                nodo.agregarHijo(ESTATUTO()); 
+                break;
+            case IF:
+                NodoParseTree nodoIf = new NodoParseTree("IF");
+                nodoIf.agregarHijo(eat(IF)); 
+                nodoIf.agregarHijo(eat(PAROPEN));
+                switch (this.Tok) {
+                    case ID:
+                    case FLOAT:
+                    case NUM:
+                        nodoIf.agregarHijo(eat(this.Tok)); 
+                        nodoIf.agregarHijo(eat(COMP));
+                        switch (this.Tok) {
+                            case ID:
+                            case FLOAT:
+                            case NUM:
+                                nodoIf.agregarHijo(eat(this.Tok));
+                                nodoIf.agregarHijo(eat(PARCLOSE));
+                                nodoIf.agregarHijo(eat(LLAVEOPEN));
+                                nodoIf.agregarHijo(ESTATUTO());
+                                nodoIf.agregarHijo(eat(LLAVECLOSE));
+                                nodoIf.agregarHijo(handleElse());
+                                nodo.agregarHijo(nodoIf);
+                                nodo.agregarHijo(ESTATUTO());
+                                break;
+                            case PAROPEN:
+                                nodoIf.agregarHijo(eat(PAROPEN)); 
+                                nodoIf.agregarHijo(CALCULO()); 
+                                nodoIf.agregarHijo(eat(PARCLOSE));
+                                nodoIf.agregarHijo(eat(PARCLOSE));
+                                nodoIf.agregarHijo(eat(LLAVEOPEN));
+                                nodoIf.agregarHijo(ESTATUTO());
+                                nodoIf.agregarHijo(eat(LLAVECLOSE));
+                                nodoIf.agregarHijo(handleElse());
+                                nodo.agregarHijo(nodoIf);
+                                nodo.agregarHijo(ESTATUTO());
+                                break;
+                        } 
+                        break;
+                    case PAROPEN:
+                        nodoIf.agregarHijo(eat(PAROPEN));
+                        nodoIf.agregarHijo(CALCULO());
+                        nodoIf.agregarHijo(eat(PARCLOSE));
+                        nodoIf.agregarHijo(eat(COMP));
+                        switch (this.Tok) {
+                            case ID:
+                            case FLOAT:
+                            case NUM:
+                                nodoIf.agregarHijo(eat(this.Tok));  
+                                nodoIf.agregarHijo(eat(PARCLOSE));
+                                nodoIf.agregarHijo(eat(LLAVEOPEN));
+                                nodoIf.agregarHijo(ESTATUTO());
+                                nodoIf.agregarHijo(eat(LLAVECLOSE));
+                                nodoIf.agregarHijo(handleElse());
+                                nodo.agregarHijo(nodoIf);
+                                nodo.agregarHijo(ESTATUTO());
+                                break;
+                            case PAROPEN:
+                                nodoIf.agregarHijo(eat(PAROPEN)); 
+                                nodoIf.agregarHijo(CALCULO());
+                                nodoIf.agregarHijo(eat(PARCLOSE));
+                                nodoIf.agregarHijo(eat(PARCLOSE));
+                                nodoIf.agregarHijo(eat(LLAVEOPEN));
+                                nodoIf.agregarHijo(ESTATUTO());
+                                nodoIf.agregarHijo(eat(LLAVECLOSE));
+                                nodoIf.agregarHijo(handleElse());
+                                nodo.agregarHijo(nodoIf);
+                                nodo.agregarHijo(ESTATUTO());
+                                break;
+                        } 
+                        break;
+                }       
+                break;
+            case PRINT:
+                NodoParseTree nodoPrint = new NodoParseTree("PRINT");
+                nodoPrint.agregarHijo(eat(PRINT)); 
+                nodoPrint.agregarHijo(eat(PAROPEN));
+                switch (this.Tok) {
+                    case ID:
+                        nodoPrint.agregarHijo(eat(ID)); 
+                        nodoPrint.agregarHijo(eat(PARCLOSE)); 
+                        nodoPrint.agregarHijo(eat(EOL)); 
+                        nodo.agregarHijo(nodoPrint);
+                        nodo.agregarHijo(ESTATUTO());
+                        break;
+                    case CADENA:
+                        nodoPrint.agregarHijo(eat(CADENA)); 
+                        nodoPrint.agregarHijo(eat(PARCLOSE)); 
+                        nodoPrint.agregarHijo(eat(EOL)); 
+                        nodo.agregarHijo(nodoPrint);
+                        nodo.agregarHijo(ESTATUTO());
+                        break;
+                    case PAROPEN:
+                        nodoPrint.agregarHijo(CALCULO()); 
+                        nodoPrint.agregarHijo(eat(PARCLOSE)); 
+                        nodoPrint.agregarHijo(eat(EOL)); 
+                        nodo.agregarHijo(nodoPrint);
+                        nodo.agregarHijo(ESTATUTO());
+                        break;
+                }  
+                break;
+            case FOR:
+                NodoParseTree nodoFor = new NodoParseTree("FOR");
+                nodoFor.agregarHijo(eat(FOR));
+                nodoFor.agregarHijo(eat(PAROPEN));
+                if(this.Tok == TIPO_DATO_INT) {
+                    nodoFor.agregarHijo(eat(TIPO_DATO_INT)); 
+                    nodoFor.agregarHijo(eat(ID));   
+                } else if(this.Tok == ID)    
+                    nodoFor.agregarHijo(eat(ID));                     
 
-            nodoFor.agregarHijo(eat(ASIG));
-            switch (this.Tok) {
-                case PAROPEN:
-                    nodoFor.agregarHijo(eat(PAROPEN)); 
-                    nodoFor.agregarHijo(CALCULO()); 
-                    nodoFor.agregarHijo(eat(PARCLOSE));
-                    break;
-                case NUM:
-                    nodoFor.agregarHijo(eat(NUM));
-                    break;
-                case ID:
-                    nodoFor.agregarHijo(eat(ID));
-                    break;
-            }
-            nodoFor.agregarHijo(eat(EOL)); 
-            switch (this.Tok) {
-                case PAROPEN:
-                    nodoFor.agregarHijo(eat(PAROPEN)); 
-                    nodoFor.agregarHijo(CALCULO()); 
-                    nodoFor.agregarHijo(eat(PARCLOSE)); 
-                    break;
-                case NUM:
-                    nodoFor.agregarHijo(eat(NUM));
-                    break;
-                case ID:
-                    nodoFor.agregarHijo(eat(ID));
-                    break;
-            }
-            nodoFor.agregarHijo(eat(COMP));
-            switch (this.Tok) {
-                case PAROPEN:
-                    nodoFor.agregarHijo(eat(PAROPEN)); 
-                    nodoFor.agregarHijo(CALCULO()); 
-                    nodoFor.agregarHijo(eat(PARCLOSE)); 
-                    break;
-                case NUM:
-                    nodoFor.agregarHijo(eat(NUM));
-                    break;
-                case ID:
-                    nodoFor.agregarHijo(eat(ID));
-                    break;
-            }
-            nodoFor.agregarHijo(eat(EOL));
-            nodoFor.agregarHijo(eat(ID));
-            if(this.Tok == INC) nodoFor.agregarHijo(eat(INC));
-            if(this.Tok == DEC) nodoFor.agregarHijo(eat(DEC));
-            nodoFor.agregarHijo(eat(PARCLOSE));
-            nodoFor.agregarHijo(eat(LLAVEOPEN));
-            nodoFor.agregarHijo(ESTATUTO());
-            nodoFor.agregarHijo(eat(LLAVECLOSE));
-            nodo.agregarHijo(nodoFor);
-            nodo.agregarHijo(ESTATUTO());
-            break;
+                nodoFor.agregarHijo(eat(ASIG));
+                switch (this.Tok) {
+                    case PAROPEN:
+                        nodoFor.agregarHijo(eat(PAROPEN)); 
+                        nodoFor.agregarHijo(CALCULO()); 
+                        nodoFor.agregarHijo(eat(PARCLOSE));
+                        break;
+                    case NUM:
+                        nodoFor.agregarHijo(eat(NUM));
+                        break;
+                    case ID:
+                        nodoFor.agregarHijo(eat(ID));
+                        break;
+                }
+                nodoFor.agregarHijo(eat(EOL)); 
+                switch (this.Tok) {
+                    case PAROPEN:
+                        nodoFor.agregarHijo(eat(PAROPEN)); 
+                        nodoFor.agregarHijo(CALCULO()); 
+                        nodoFor.agregarHijo(eat(PARCLOSE)); 
+                        break;
+                    case NUM:
+                        nodoFor.agregarHijo(eat(NUM));
+                        break;
+                    case ID:
+                        nodoFor.agregarHijo(eat(ID));
+                        break;
+                }
+                nodoFor.agregarHijo(eat(COMP));
+                switch (this.Tok) {
+                    case PAROPEN:
+                        nodoFor.agregarHijo(eat(PAROPEN)); 
+                        nodoFor.agregarHijo(CALCULO()); 
+                        nodoFor.agregarHijo(eat(PARCLOSE)); 
+                        break;
+                    case NUM:
+                        nodoFor.agregarHijo(eat(NUM));
+                        break;
+                    case ID:
+                        nodoFor.agregarHijo(eat(ID));
+                        break;
+                }
+                nodoFor.agregarHijo(eat(EOL));
+                nodoFor.agregarHijo(eat(ID));
+                if(this.Tok == INC) nodoFor.agregarHijo(eat(INC));
+                if(this.Tok == DEC) nodoFor.agregarHijo(eat(DEC));
+                nodoFor.agregarHijo(eat(PARCLOSE));
+                nodoFor.agregarHijo(eat(LLAVEOPEN));
+                nodoFor.agregarHijo(ESTATUTO());
+                nodoFor.agregarHijo(eat(LLAVECLOSE));
+                nodo.agregarHijo(nodoFor);
+                nodo.agregarHijo(ESTATUTO());
+                break;
+        }
+        return nodo;
     }
-    return nodo;
-}
 
-private NodoArbol handleElse() {
-    if (this.Tok == ELSE) {
-        NodoArbol nodoElse = new NodoArbol("ELSE");
-        nodoElse.agregarHijo(eat(ELSE));
-        nodoElse.agregarHijo(eat(LLAVEOPEN));
-        nodoElse.agregarHijo(ESTATUTO());
-        nodoElse.agregarHijo(eat(LLAVECLOSE));
-        return nodoElse;
+    private NodoParseTree handleElse() {
+        if (this.Tok == ELSE) {
+            NodoParseTree nodoElse = new NodoParseTree("ELSE");
+            nodoElse.agregarHijo(eat(ELSE));
+            nodoElse.agregarHijo(eat(LLAVEOPEN));
+            nodoElse.agregarHijo(ESTATUTO());
+            nodoElse.agregarHijo(eat(LLAVECLOSE));
+            return nodoElse;
+        }
+        return null;
     }
-    return null;
-}
-    public NodoArbol CALCULO() {
-        NodoArbol nodo = new NodoArbol("CALCULO");
+
+    public NodoParseTree CALCULO() {
+        NodoParseTree nodo = new NodoParseTree("CALCULO");
         
         switch (this.Tok) {
             case ID:
@@ -419,7 +422,7 @@ private NodoArbol handleElse() {
         return nodo;
     }
 
-    public NodoArbol eat(int tok) {
+    public NodoParseTree eat(int tok) {
         if (this.ParserError) return null;
     
         if (i >= Escaneado.tokens.size() || i < 0) {
@@ -431,7 +434,10 @@ private NodoArbol handleElse() {
                 lexema = Escaneado.lexemas.get(i);
             }
             System.out.println("Token reconocido: " + this.Tok + " " + Words[this.Tok]);
-            NodoArbol nodo = new NodoArbol(Words[this.Tok], lexema);
+            
+            // Crear nodo con tipo, valor y lexema
+            NodoParseTree nodo = new NodoParseTree(Words[this.Tok], Words[this.Tok], lexema, lineaActual);
+            
             Avanzar();
             return nodo;
         } else {
