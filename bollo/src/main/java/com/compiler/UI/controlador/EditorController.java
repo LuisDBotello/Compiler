@@ -451,13 +451,22 @@ public class EditorController {
 
         ResultadoSemantico resultado = analizadorSem.analizar(ast);
 
-        ParseTreeToASTConverterDebug conversorDebug = new ParseTreeToASTConverterDebug();
-
 
         this.tabResultados.getSelectionModel().select(2);
-        if (resultado.isExitoso()) 
-            this.codeAreaSemantico.setStyle("-fx-background-color: #00390b6e");
-        
+        if (!resultado.isExitoso()) {
+            codeAreaSemantico.setStyle(
+                "-fx-font-family: 'Consolas', 'Courier New', monospace;" +
+                "-fx-font-size: " + tamanoFuenteResultados + "px;" +
+                "-fx-background-color: #3b1515ff;"
+            );
+        } else {
+            this.codeAreaSemantico.setStyle(
+                "-fx-font-family: 'Consolas', 'Courier New', monospace;" +
+                "-fx-font-size: " + tamanoFuenteResultados + "px;" +
+                "-fx-background-color: #00390b6e;"
+            );
+        }   
+
         this.codeAreaSemantico.replaceText(resultado.toString() + "\n\n\n" + ast.toTreeString(0));
 
     }

@@ -118,6 +118,11 @@ public class Parser {
                                 nodo.agregarHijo(eat(EOL)); 
                                 nodo.agregarHijo(DECLARACION()); 
                                 break;
+                            case ID:
+                                nodo.agregarHijo(eat(ID));
+                                nodo.agregarHijo(eat(EOL));
+                                nodo.agregarHijo(DECLARACION());
+                                break;
                         } break;
                     case EOL: 
                         nodo.agregarHijo(eat(EOL)); 
@@ -141,6 +146,11 @@ public class Parser {
                                 nodo.agregarHijo(eat(EOL)); 
                                 nodo.agregarHijo(DECLARACION()); 
                                 break;
+                            case ID:
+                                nodo.agregarHijo(eat(ID));
+                                nodo.agregarHijo(eat(EOL));
+                                nodo.agregarHijo(DECLARACION());
+                                break;
                         } break;
                     case EOL: 
                         nodo.agregarHijo(eat(EOL)); 
@@ -163,6 +173,11 @@ public class Parser {
                                 nodo.agregarHijo(eat(INPUTSTRING)); 
                                 nodo.agregarHijo(eat(EOL)); 
                                 nodo.agregarHijo(DECLARACION()); 
+                                break;
+                            case ID:
+                                nodo.agregarHijo(eat(ID));
+                                nodo.agregarHijo(eat(EOL));
+                                nodo.agregarHijo(DECLARACION());
                                 break;
                             default:
                                 Error();

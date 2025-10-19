@@ -126,7 +126,11 @@ public class ParseTreeToASTConverter {
                 nombreVar = hijo.getLexema();
                 linea = hijo.getLinea();
             }
-            // Obtener inicialización
+            // Obtener inicialización - ahora también acepta ID
+            else if (hijo.getTipo().equals("ID") && nombreVar != null && inicializacion == null) {
+                // Es una inicialización con otra variable: int x = y;
+                inicializacion = new IdentificadorNode(hijo.getLexema(), hijo.getLinea(), 1);
+            }
             else if (hijo.getTipo().equals("NUM")) {
                 inicializacion = convertirLiteral(hijo);
             }

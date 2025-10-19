@@ -25,9 +25,9 @@ public class ResultadoSemantico {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         
-        sb.append("\n╔══════════════════════════════════════════════════════════════════════════════════╗\n");
-        sb.append("║               RESULTADO DEL ANÁLISIS SEMÁNTICO                                   ║\n");
-        sb.append("╚══════════════════════════════════════════════════════════════════════════════════╝\n");
+        sb.append("\n╔═══════════════════════════════════════════════════════════════════════════════════╗\n");
+        sb.append("║               RESULTADO DEL ANÁLISIS SEMÁNTICO                                    ║\n");
+        sb.append("╚═══════════════════════════════════════════════════════════════════════════════════╝\n");
         
         if (exitoso && warnings.isEmpty()) {
             sb.append("\n✅ Análisis semántico exitoso. No se encontraron errores.\n");

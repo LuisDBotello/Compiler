@@ -35,6 +35,7 @@ public class DeclaracionVariableNode extends SentenciaNode {
             sb.append(indent(nivel + 1)).append("Inicialización:\n");
             sb.append(inicializacion.toTreeString(nivel + 2));
         }
+        System.out.println(sb);
         return sb.toString();
     }
 }
