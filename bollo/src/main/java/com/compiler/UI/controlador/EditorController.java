@@ -1,6 +1,7 @@
 package com.compiler.UI.controlador;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
@@ -10,6 +11,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
@@ -23,6 +26,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Comparator;
 import com.compiler.Engine.*;
+import com.compiler.Engine.animations.VentanaAnimacionEscaner;
+import com.compiler.Engine.animations.VentanaAnimacionEscanerSinFXML;
 
 public class EditorController {
     @FXML
@@ -328,6 +333,22 @@ public class EditorController {
         codeAreaLexico.moveTo(0);
         codeAreaLexico.requestFollowCaret();
     }
+    @FXML 
+    private void onAnimarEscaner() {
+        String codigo = codeArea.getText();
+        
+        if (codigo == null || codigo.trim().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Código vacío");
+            alert.setHeaderText("No hay código para analizar");
+            alert.setContentText("Escribe código antes de animar.");
+            alert.showAndWait();
+            return;
+        }
+        
+        Stage currentStage = (Stage) codeArea.getScene().getWindow();
+        VentanaAnimacionEscanerSinFXML.mostrar(codigo, currentStage);
+    }
 
     @FXML
     private void parsearCodigo() {
@@ -467,7 +488,7 @@ public class EditorController {
             );
         }   
 
-        this.codeAreaSemantico.replaceText(resultado.toString() + "\n\n\n" + ast.toTreeString(0));
+        this.codeAreaSemantico.replaceText(resultado.toString() + "\n\n\n" + ast.toTreeString(1));
 
     }
 

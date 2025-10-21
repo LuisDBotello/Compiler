@@ -3,10 +3,6 @@ package com.compiler.Engine.semantic;
 import com.compiler.Engine.ast.*;
 import java.util.*;
 
-// ============================================================================
-// TABLA DE SÍMBOLOS Y SÍMBOLOS (igual que antes)
-// ============================================================================
-
 class Simbolo {
     private String nombre;
     private String tipo;

@@ -26,6 +26,7 @@
             <Button text="A-" onAction="#disminuirTexto"/>
             <Button text="Guardar" onAction="#guardarCodigo"/>
             <Button text="Scanner" onAction="#escanearCodigo"/>
+            <Button text="Explicar" onAction="#onAnimarEscaner"/>
             <Button text="Parser" onAction="#parsearCodigo"/>
             <Button text="Semántico" onAction="#analizarSemantico"/>
             <Button text="Gen. Ensamblador" onAction="#generarEnsamblador"/>

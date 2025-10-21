@@ -190,6 +190,7 @@ VBox Label {
     -fx-border-width: 1;
     -fx-border-radius: 6;
     -fx-cursor: hand;
+    -fx-translate-y: 5px;
 }
 
 .button:hover {

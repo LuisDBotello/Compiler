@@ -360,9 +360,9 @@ public class ParseTreeToASTConverter {
         BloqueNode bloqueIf = null;
         BloqueNode bloqueElse = null;
         int linea = 1;
-        boolean dentroCondicion = false;
-        boolean dentroIf = false;
         int nivelParentesis = 0;
+        List<NodoParseTree> nodosCondicion = new ArrayList<>();
+        boolean recolectandoCondicion = false;
         
         for (int i = 0; i < hijos.size(); i++) {
             NodoParseTree hijo = hijos.get(i);
@@ -371,26 +371,33 @@ public class ParseTreeToASTConverter {
                 linea = hijo.getLinea();
             }
             else if (hijo.getLexema() != null && hijo.getLexema().equals("(")) {
+                if (nivelParentesis == 0 && condicion == null) {
+                    recolectandoCondicion = true;
+                }
                 nivelParentesis++;
-                if (condicion == null) {
-                    dentroCondicion = true;
+                if (recolectandoCondicion && nivelParentesis > 1) {
+                    nodosCondicion.add(hijo);
                 }
             }
             else if (hijo.getLexema() != null && hijo.getLexema().equals(")")) {
                 nivelParentesis--;
-                if (nivelParentesis == 0 && dentroCondicion) {
-                    dentroCondicion = false;
-                    dentroIf = true;
+                if (nivelParentesis == 0 && recolectandoCondicion) {
+                    // Terminó la condición, procesarla
+                    condicion = construirCondicionCompleta(nodosCondicion);
+                    recolectandoCondicion = false;
+                    nodosCondicion.clear();
+                } else if (recolectandoCondicion) {
+                    nodosCondicion.add(hijo);
                 }
             }
-            else if (dentroCondicion && hijo.getTipo().equals("CALCULO")) {
-                condicion = convertirCalculo(hijo);
+            else if (recolectandoCondicion) {
+                // Agregar todos los nodos de la condición
+                nodosCondicion.add(hijo);
             }
-            else if (dentroIf && hijo.getTipo().equals("ESTATUTO")) {
+            else if (hijo.getTipo().equals("ESTATUTO") && condicion != null && bloqueIf == null) {
                 List<SentenciaNode> sentencias = new ArrayList<>();
                 convertirEstatutos(hijo, sentencias);
                 bloqueIf = new BloqueNode(sentencias, linea, 1);
-                dentroIf = false;
             }
             else if (hijo.getTipo().equals("ELSE")) {
                 bloqueElse = convertirElse(hijo);
@@ -573,36 +580,7 @@ public class ParseTreeToASTConverter {
         return resultado;
     }
     
-    /**
-     * Construye una expresión binaria respetando precedencia de operadores
-     */
-    private ExpresionNode construirExpresionBinaria(List<NodoParseTree> nodos) {
-        if (nodos.isEmpty()) return null;
-        
-        if (nodos.size() == 1) {
-            return convertirNodoAExpresion(nodos.get(0));
-        }
-        
-        // Buscar operador con menor prioridad (de derecha a izquierda)
-        int posOperador = buscarOperadorMenorPrioridad(nodos);
-        
-        if (posOperador == -1) {
-            // No hay operador, procesar primer elemento
-            return convertirNodoAExpresion(nodos.get(0));
-        }
-        
-        // Dividir en izquierda y derecha
-        List<NodoParseTree> izq = nodos.subList(0, posOperador);
-        List<NodoParseTree> der = nodos.subList(posOperador + 1, nodos.size());
-        
-        ExpresionNode expIzq = construirExpresionBinaria(izq);
-        ExpresionNode expDer = construirExpresionBinaria(der);
-        
-        String operador = nodos.get(posOperador).getLexema();
-        int linea = nodos.get(posOperador).getLinea();
-        
-        return new ExpresionBinariaNode(expIzq, operador, expDer, linea, 1);
-    }
+   
     
     /**
      * Busca el operador con menor prioridad en la lista
@@ -664,7 +642,148 @@ public class ParseTreeToASTConverter {
         
         return new LiteralNode(0, "int", 1, 1);
     }
-    
+    private ExpresionNode construirCondicionCompleta(List<NodoParseTree> nodos) {
+        if (nodos.isEmpty()) {
+            return new LiteralNode(true, "boolean", 1, 1);
+        }
+        
+        // Buscar el comparador principal (fuera de paréntesis)
+        int posComparador = -1;
+        int nivelParentesis = 0;
+        
+        for (int i = 0; i < nodos.size(); i++) {
+            NodoParseTree nodo = nodos.get(i);
+            
+            if (nodo.getLexema() != null) {
+                if (nodo.getLexema().equals("(")) {
+                    nivelParentesis++;
+                } else if (nodo.getLexema().equals(")")) {
+                    nivelParentesis--;
+                }
+            }
+            
+            // Buscar comparador fuera de paréntesis
+            if (nivelParentesis == 0 && nodo.getTipo().equals("COMPARADOR")) {
+                posComparador = i;
+                break;
+            }
+        }
+        
+        // Si no hay comparador, es una expresión simple
+        if (posComparador == -1) {
+            return construirExpresionDesdeNodos(nodos);
+        }
+        
+        // Dividir en izquierda y derecha del comparador
+        List<NodoParseTree> nodosIzq = nodos.subList(0, posComparador);
+        List<NodoParseTree> nodosDer = nodos.subList(posComparador + 1, nodos.size());
+        String operador = nodos.get(posComparador).getLexema();
+        int linea = nodos.get(posComparador).getLinea();
+        
+        ExpresionNode ladoIzq = construirExpresionDesdeNodos(nodosIzq);
+        ExpresionNode ladoDer = construirExpresionDesdeNodos(nodosDer);
+        
+        return new ExpresionBinariaNode(ladoIzq, operador, ladoDer, linea, 1);
+    }
+    private ExpresionNode construirExpresionDesdeNodos(List<NodoParseTree> nodos) {
+        if (nodos.isEmpty()) {
+            return new LiteralNode(0, "int", 1, 1);
+        }
+        
+        // Si hay un solo nodo CALCULO, procesarlo directamente
+        if (nodos.size() == 1 && nodos.get(0).getTipo().equals("CALCULO")) {
+            return convertirCalculo(nodos.get(0));
+        }
+        
+        // Si hay un solo nodo que no es CALCULO
+        if (nodos.size() == 1) {
+            return convertirNodoAExpresion(nodos.get(0));
+        }
+        
+        // Aplanar eliminando paréntesis externos si los hay
+        List<NodoParseTree> nodosAplanados = eliminarParentesisExternos(nodos);
+        
+        // Construir expresión binaria con precedencia
+        return construirExpresionBinaria(nodosAplanados);
+    }
+
+    /**
+     * Elimina paréntesis externos si toda la expresión está entre paréntesis
+     * Ejemplo: (2*(x+4)+a) -> 2*(x+4)+a
+     */
+    private List<NodoParseTree> eliminarParentesisExternos(List<NodoParseTree> nodos) {
+        if (nodos.isEmpty()) return nodos;
+        
+        // Verificar si empieza con ( y termina con )
+        if (nodos.get(0).getLexema() != null && nodos.get(0).getLexema().equals("(") &&
+            nodos.get(nodos.size() - 1).getLexema() != null && 
+            nodos.get(nodos.size() - 1).getLexema().equals(")")) {
+            
+            // Verificar que estos paréntesis encierran toda la expresión
+            int nivel = 0;
+            boolean sonExternos = true;
+            
+            for (int i = 0; i < nodos.size(); i++) {
+                NodoParseTree nodo = nodos.get(i);
+                if (nodo.getLexema() != null) {
+                    if (nodo.getLexema().equals("(")) nivel++;
+                    if (nodo.getLexema().equals(")")) nivel--;
+                    
+                    // Si el nivel llega a 0 antes del último paréntesis, no son externos
+                    if (nivel == 0 && i < nodos.size() - 1) {
+                        sonExternos = false;
+                        break;
+                    }
+                }
+            }
+            
+            if (sonExternos) {
+                // Eliminar primer y último elemento
+                return nodos.subList(1, nodos.size() - 1);
+            }
+        }
+        
+        return nodos;
+    }
+
+    /**
+     * Versión mejorada de construirExpresionBinaria que maneja correctamente
+     * los nodos CALCULO y los operadores
+     */
+    private ExpresionNode construirExpresionBinaria(List<NodoParseTree> nodos) {
+        if (nodos.isEmpty()) return null;
+        
+        if (nodos.size() == 1) {
+            return convertirNodoAExpresion(nodos.get(0));
+        }
+        
+        // Buscar operador con menor prioridad (de derecha a izquierda)
+        int posOperador = buscarOperadorMenorPrioridad(nodos);
+        
+        if (posOperador == -1) {
+            // No hay operador visible, procesar primer elemento
+            NodoParseTree primero = nodos.get(0);
+            
+            // Si es un CALCULO, procesarlo
+            if (primero.getTipo().equals("CALCULO")) {
+                return convertirCalculo(primero);
+            }
+            
+            return convertirNodoAExpresion(primero);
+        }
+        
+        // Dividir en izquierda y derecha
+        List<NodoParseTree> izq = nodos.subList(0, posOperador);
+        List<NodoParseTree> der = nodos.subList(posOperador + 1, nodos.size());
+        
+        ExpresionNode expIzq = construirExpresionBinaria(izq);
+        ExpresionNode expDer = construirExpresionBinaria(der);
+        
+        String operador = nodos.get(posOperador).getLexema();
+        int linea = nodos.get(posOperador).getLinea();
+        
+        return new ExpresionBinariaNode(expIzq, operador, expDer, linea, 1);
+    }
     /**
      * Convierte un literal (número o cadena)
      */

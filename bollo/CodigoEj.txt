@@ -1,5 +1,6 @@
 main(){
     int x = 90;
+    float h = 13.2;
     int y = 70;
     int a = 5;
     String MSG1 = "Luis";

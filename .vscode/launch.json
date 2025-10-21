@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "prueba",
+            "request": "launch",
+            "mainClass": "com.compiler.UI.controlador.prueba",
+            "projectName": "bollo"
+        },
+        {
+            "type": "java",
             "name": "Launch JavaFX App",
             "request": "launch",
             "mainClass": "com.compiler.UI.UserInterface",
