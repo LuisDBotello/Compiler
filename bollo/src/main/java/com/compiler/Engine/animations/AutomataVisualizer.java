@@ -338,19 +338,19 @@ public class AutomataVisualizer {
         double cy = height / 2 - 30;
         
         gc.setFill(Color.web("#4CAF50"));
-        gc.fillOval(cx - 50, cy - 50, 100, 100);  // ⬆️ Aumentado de 80x80 a 100x100
+        gc.fillOval(cx - 40, cy - 40, 80, 80);  // Aumentado de 80x80 a 100x100
         
         gc.setStroke(Color.LIGHTGREEN);
-        gc.setLineWidth(5);  // ⬆️ Aumentado de 4 a 5
+        gc.setLineWidth(5);  // Aumentado de 4 a 5
         gc.strokeOval(cx - 50, cy - 50, 100, 100);
         gc.strokeOval(cx - 55, cy - 55, 110, 110);
         
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 36));  // ⬆️ Aumentado de 24 a 36
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 24));  //  Aumentado de 24 a 36
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("✓", cx, cy + 15);
         
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));  // ⬆️ Aumentado de 14 a 18
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 14));  // Aumentado de 14 a 18
         gc.fillText("TOKEN ACEPTADO", cx, cy + 70);
     }
     

@@ -48,7 +48,7 @@ public class VentanaAnimacionEscanerSinFXML {
         textAreaInfo.setWrapText(true);
         
         // Crear canvas y visualizador del autómata PRIMERO
-        Canvas canvasAutomata = new Canvas(600, 500);  // ⬆️ Aumentado de 400x400 a 600x500
+        Canvas canvasAutomata = new Canvas(400, 300);  // ⬆️ Aumentado de 400x400 a 600x500
         AutomataVisualizer automataViz = new AutomataVisualizer(canvasAutomata);
         
         // Inicializar escáner animado CON el visualizador
@@ -210,11 +210,11 @@ public class VentanaAnimacionEscanerSinFXML {
         
         // Split entre info y tokens
         SplitPane splitInfoTokens = new SplitPane(vboxInfo, vboxTokens);
-        splitInfoTokens.setOrientation(Orientation.VERTICAL);
+        splitInfoTokens.setOrientation(Orientation.HORIZONTAL);
         splitInfoTokens.setDividerPositions(0.5);
         
         // ====================================================================
-        // PANEL DERECHO: AUTÓMATA (40%) - CON TAMAÑO FIJO PARA EL CANVAS
+        // PANEL DERECHO: AUTÓMATA 
         // ====================================================================
         
         VBox vboxAutomata = new VBox(5);
@@ -254,7 +254,7 @@ public class VentanaAnimacionEscanerSinFXML {
         // ====================================================================
         
         SplitPane splitInferior = new SplitPane(splitInfoTokens, vboxAutomata);
-        splitInferior.setDividerPositions(0.5);  // ⬆️ Cambiado de 0.6 a 0.5 (50/50)
+        splitInferior.setDividerPositions(0.6);  
         
         SplitPane splitPrincipal = new SplitPane(vboxCodigo, splitInferior);
         splitPrincipal.setOrientation(Orientation.VERTICAL);
